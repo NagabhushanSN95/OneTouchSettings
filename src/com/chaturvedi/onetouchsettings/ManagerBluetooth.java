@@ -2,6 +2,7 @@ package com.chaturvedi.onetouchsettings;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
 
 public class ManagerBluetooth
@@ -9,12 +10,18 @@ public class ManagerBluetooth
 	private static boolean bluetoothState;
 	private static boolean visibilityState;
 	
-	private static Activity context;
+	//private static Activity context;
+	private static Context context;
 	private static BluetoothAdapter bluetoothManager;
 	
 	public ManagerBluetooth(Activity activity)
 	{
 		context=activity;
+	}
+	
+	public ManagerBluetooth(Context cxt)
+	{
+		context=cxt;
 	}
 	
 	public static void readBluetoothState()

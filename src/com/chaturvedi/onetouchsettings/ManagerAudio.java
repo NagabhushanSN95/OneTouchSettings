@@ -1,6 +1,7 @@
 package com.chaturvedi.onetouchsettings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.media.AudioManager;
 
 public class ManagerAudio
@@ -9,12 +10,18 @@ public class ManagerAudio
 	private static boolean vibrationState;
 	
 	@SuppressWarnings("unused")
-	private static Activity context;
+	//private static Activity context;
+	private static Context context;
 	private static AudioManager audioManager;
 	
 	public ManagerAudio(Activity activity)
 	{
 		context=activity;
+	}
+	
+	public ManagerAudio(Context cxt)
+	{
+		context=cxt;
 	}
 	
 	@SuppressWarnings({ "deprecation" })

@@ -16,7 +16,9 @@ public class ManagerMobileData
 	private static boolean mobileDataState;
 	private static int mobileDataSim;
 	
-	private static Activity context;
+	//private static Activity context;
+	private static Context context;
+	
 	private static ConnectivityManager tetheringManager;
 	private static Method tetheringMethod;
 	private static UserDataManager dataManager;
@@ -29,6 +31,11 @@ public class ManagerMobileData
 	public ManagerMobileData(Activity activity)
 	{
 		context=activity;
+	}
+	
+	public ManagerMobileData(Context cxt)
+	{
+		context=cxt;
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

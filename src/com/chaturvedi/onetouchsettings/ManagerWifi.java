@@ -7,12 +7,18 @@ import android.net.wifi.WifiManager;
 public class ManagerWifi
 {
 	private static boolean wifiState;
-	private static Activity context;
+	//private static Activity context;
+	private static Context context;
 	private static WifiManager wifiManager;
 	
 	public ManagerWifi(Activity activity)
 	{
 		context=activity;
+	}
+	
+	public ManagerWifi(Context cxt)
+	{
+		context=cxt;
 	}
 	
 	public static void readWifiState()

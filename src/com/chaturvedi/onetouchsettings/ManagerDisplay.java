@@ -1,17 +1,24 @@
 package com.chaturvedi.onetouchsettings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.provider.Settings;
 
 public class ManagerDisplay
 {
 	private static boolean autoRotationState=false;
 	
-	private static Activity context;
+	//private static Activity context;
+	private static Context context;
 	
 	public ManagerDisplay(Activity activity)
 	{
 		context=activity;
+	}
+	
+	public ManagerDisplay(Context cxt)
+	{
+		context=cxt;
 	}
 	
 	public static void readDisplayState()

@@ -16,7 +16,8 @@ import android.widget.RemoteViews;
 
 public class NotificationProvider
 {
-	private Activity context;
+	//private Activity context;
+	private Context context;
 	private NotificationCompat.Builder notificationBuilder;
 	private NotificationManager manager;
 	private Notification notification;
@@ -36,6 +37,11 @@ public class NotificationProvider
 	public NotificationProvider(Activity activity)
 	{
 		context=activity;
+	}
+	
+	public NotificationProvider(Context cxt)
+	{
+		context = cxt;
 	}
 	
 	@SuppressLint({ "InlinedApi", "NewApi" })
