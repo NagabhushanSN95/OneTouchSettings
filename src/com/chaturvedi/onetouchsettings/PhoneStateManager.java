@@ -1,5 +1,6 @@
 package com.chaturvedi.onetouchsettings;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import android.app.Activity;
@@ -14,6 +15,7 @@ import android.util.Log;
 public class PhoneStateManager extends Activity
 {
 	private static boolean wifiState;
+	private static boolean tetheringState;
 	private static boolean mobileDataState;
 	private static boolean bluetoothState;
 	private static boolean visibilityState;
@@ -22,6 +24,8 @@ public class PhoneStateManager extends Activity
 	
 	private static Activity context;
 	private static WifiManager wifiManager;
+	private static ConnectivityManager tetheringManager;
+	private static Method tetheringMethod;
 	private static ConnectivityManager mobileDataManager;
 	private static Method mobileDataMethod;
 	private static BluetoothAdapter bluetoothManager;
@@ -43,6 +47,22 @@ public class PhoneStateManager extends Activity
 			wifiState=true;
 		else
 			wifiState=false;
+		
+		try
+		{
+			tetheringManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			tetheringMethod=ConnectivityManager.class.getDeclaredMethod("tether");
+			tetheringMethod.setAccessible(true);
+			
+			Class tetheringClass=Class.forName(mobileDataManager.getClass().getName());
+			tetheringMethod=tetheringClass.getDeclaredMethod("tether");
+			tetheringMethod.setAccessible(true);
+			tetheringState=(Boolean)tetheringMethod.invoke(tetheringManager);
+		}
+		catch(Exception e)
+		{
+			
+		}
 		
 		try
 		{
@@ -106,6 +126,63 @@ public class PhoneStateManager extends Activity
 	public static boolean getWifiState()
 	{
 		return wifiState;
+	}
+	
+	public static void setTetheringState(boolean state)
+	{
+		tetheringState=state;
+		String tag="test";
+		try
+		{
+            ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            Log.d(tag, "test enable usb tethering");
+            Method[] wmMethods = cm.getClass().getDeclaredMethods();
+            String str = "";
+            if (tetheringState)
+                str = "tether";
+            else
+                str = "untether";
+            for (Method method : wmMethods)
+            {
+                Log.d("in usb tethering method",method.getName()+"<<nn>>");
+                if (method.getName().equals(str))
+                {
+                    Log.d(tag, "gg==" + method.getName());
+                    Log.d("in if", " case matches "+method.getName()+"and str is "+str);
+                    try
+                    {
+                        Integer code = (Integer) method.invoke(cm, "usb0");
+                    //  code = (Integer) method.invoke(cm, "setting TH");
+                        Log.d(tag, "code===" + code);
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        Log.d(tag, "eroor== gg " + e.toString());
+                        e.printStackTrace();
+                    }
+                    catch (IllegalAccessException e)
+                    {
+                        Log.d(tag, "eroor== gg " + e.toString());
+                        e.printStackTrace();
+                    }
+                    catch (InvocationTargetException e)
+                    {
+                        Log.d(tag, "eroor== gg " + e.toString());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+		catch(Exception e)
+		{
+            Log.e(tag, "" + e);
+        }
+
+    }
+	
+	public static boolean getTetheringState()
+	{
+		return tetheringState;
 	}
 	
 	public static void setMobileDataState(boolean state)

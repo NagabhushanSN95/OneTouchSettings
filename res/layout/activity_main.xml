@@ -87,6 +87,14 @@
         	    android:background="#FFFFFF"
         	    android:src="@drawable/vibration_on" />
 
+    		<ImageButton
+    		    android:id="@+id/usb_tethering"
+    		    android:layout_width="wrap_content"
+    		    android:layout_height="wrap_content"
+        	    android:layout_marginLeft="10dp"
+        	    android:background="#FFFFFF"
+    		    android:src="@drawable/usb_tethering_off" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 public class MainActivity extends Activity
 {
 	private static boolean wifiState;
+	private static boolean tetheringState;
 	private static boolean mobileDataState;
 	private static boolean bluetoothState;
 	private static boolean visibilityState;
@@ -23,6 +24,7 @@ public class MainActivity extends Activity
 	private static boolean vibrationState;
 
 	private static ImageButton wifiButton;
+	private static ImageButton tetheringButton;
 	private static ImageButton internetButton;
 	private static ImageButton bluetoothButton;
 	private static ImageButton visibilityButton;
@@ -42,6 +44,8 @@ public class MainActivity extends Activity
 
 		wifiButton=(ImageButton)findViewById(R.id.wifi);
 		wifiButton.setOnClickListener(new WifiListener());
+		tetheringButton=(ImageButton)findViewById(R.id.usb_tethering);
+		tetheringButton.setOnClickListener(new TetheringListener());
 		internetButton=(ImageButton)findViewById(R.id.internet);
 		internetButton.setOnClickListener(new InternetListener());
 		bluetoothButton=(ImageButton)findViewById(R.id.bluetooth);
@@ -65,6 +69,7 @@ public class MainActivity extends Activity
 		}
 		PhoneStateManager.readPhoneState(this);
 		wifiState=PhoneStateManager.getWifiState();
+		tetheringState=PhoneStateManager.getTetheringState();
 		readMobileDataState();
 		bluetoothState=PhoneStateManager.getBluetoothState();
 		visibilityState=PhoneStateManager.getVisibilityState();
@@ -97,6 +102,7 @@ public class MainActivity extends Activity
 				{
 					PhoneStateManager.readPhoneState(MainActivity.this);
 					wifiState=PhoneStateManager.getWifiState();
+					tetheringState=PhoneStateManager.getTetheringState();
 					readMobileDataState();
 					bluetoothState=PhoneStateManager.getBluetoothState();
 					visibilityState=PhoneStateManager.getVisibilityState();
@@ -145,6 +151,11 @@ public class MainActivity extends Activity
 			wifiButton.setImageResource(R.drawable.wifi_on);
 		else
 			wifiButton.setImageResource(R.drawable.wifi_off);
+
+		if(tetheringState)
+			tetheringButton.setImageResource(R.drawable.usb_tethering_on);
+		else
+			tetheringButton.setImageResource(R.drawable.usb_tethering_off);
 		
 		if(mobileDataState)
 			internetButton.setImageResource(R.drawable.mobile_data_on);
@@ -180,6 +191,18 @@ public class MainActivity extends Activity
 		{
 			wifiState=!wifiState;
 			PhoneStateManager.setWifiState(wifiState);
+		}
+		
+	}
+	
+	private class TetheringListener implements OnClickListener
+	{
+
+		@Override
+		public void onClick(View v)
+		{
+			tetheringState=!tetheringState;
+			PhoneStateManager.setTetheringState(tetheringState);
 		}
 		
 	}
