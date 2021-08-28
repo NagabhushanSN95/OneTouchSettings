@@ -25,7 +25,7 @@ public class ManagerBluetooth
 		else
 			bluetoothState=false;
 		
-		visibilityState=bluetoothManager.isDiscovering();
+		getVisibilityState();
 	}
 	
 	public static void setBluetoothState(boolean state)
@@ -48,16 +48,27 @@ public class ManagerBluetooth
 		return bluetoothState;
 	}
 	
-	public static void setVisibility()
+	public static void setVisibility(boolean state)
 	{
+		int numSeconds;
+		visibilityState=state;
+		if(visibilityState)
+		{
+			numSeconds=300;
+		}
+		else
+		{
+			numSeconds=1;
+		}
 		Intent visibilityIntent=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-		visibilityIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+		visibilityIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, numSeconds);
 		context.startActivity(visibilityIntent);
 	}
 	
 	public static void toggleVisibility()
 	{
-		
+		visibilityState=!visibilityState;
+		setVisibility(visibilityState);
 	}
 	
 	public static boolean getVisibilityState()
