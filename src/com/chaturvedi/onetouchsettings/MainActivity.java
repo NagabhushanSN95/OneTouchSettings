@@ -105,7 +105,7 @@ public class MainActivity extends Activity
 				@Override
 				public void run()
 				{
-					PhoneStateManager.readPhoneState(MainActivity.this);
+					//PhoneStateManager.readPhoneState(MainActivity.this);
 					wifiState=PhoneStateManager.getWifiState();
 					tetheringState=PhoneStateManager.getTetheringState();
 					readMobileDataState();

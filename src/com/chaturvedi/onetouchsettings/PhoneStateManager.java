@@ -29,6 +29,7 @@ public class PhoneStateManager extends Activity
 	private static WifiManager wifiManager;
 	private static ConnectivityManager tetheringManager;
 	private static Method tetheringMethod;
+	private static UserDataManager dataManager;
 	private static ConnectivityManager mobileDataManager;
 	@SuppressWarnings("rawtypes")
 	private static Class mobileDataClass;
@@ -81,11 +82,17 @@ public class PhoneStateManager extends Activity
 			tetheringMethod=tetheringClass.getDeclaredMethod("isTetheringSupported");
 			tetheringMethod.setAccessible(true);
 			isTetherable=(Boolean)tetheringMethod.invoke(tetheringManager);
+			
 		}
 		catch(Exception e)
 		{
 			
 		}
+		
+		// Read Tethering State And Data Sim
+		dataManager=new UserDataManager(context);
+		tetheringState=dataManager.getTetheringState();
+		mobileDataSim=dataManager.getMobileDataSimNo();
 		
 		// Check Mobile-Data State
 		try
@@ -155,14 +162,43 @@ public class PhoneStateManager extends Activity
 		return wifiState;
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static boolean isTetherable()
 	{
+		try
+		{
+			Class tetheringClass=Class.forName(mobileDataManager.getClass().getName());
+			tetheringMethod=tetheringClass.getDeclaredMethod("isTetheringSupported");
+			tetheringMethod.setAccessible(true);
+			isTetherable=(Boolean)tetheringMethod.invoke(tetheringManager);
+		}
+		catch(IllegalAccessException e)
+		{
+			e.printStackTrace();
+		}
+		catch(IllegalArgumentException e) 
+		{
+			e.printStackTrace();
+		}
+		catch(InvocationTargetException e)
+		{
+			e.printStackTrace();
+		}
+		catch(ClassNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		catch(NoSuchMethodException e)
+		{
+			e.printStackTrace();
+		}
 		return isTetherable;
 	}
 	
 	public static void setTetheringState(boolean state)
 	{
 		tetheringState=state;
+		isTetherable();
 		if(tetheringState && !isTetherable)
 		{
 			AlertDialog.Builder notTetherable=new AlertDialog.Builder(context);
@@ -192,6 +228,8 @@ public class PhoneStateManager extends Activity
 	                    	method.invoke(tetheringManager, "usb0");
 	                        //Integer code = (Integer) method.invoke(tetheringManager, "usb0");
 	                    	//code = (Integer) method.invoke(tetheringManager, "setting TH");
+	                    	
+	            			dataManager.saveData(tetheringState, mobileDataSim);
 	                    }
 	                    catch (IllegalArgumentException e)
 	                    {
@@ -272,6 +310,7 @@ public class PhoneStateManager extends Activity
 					Toast.makeText(context, "Data Network "+"Changed To Default Sim 1", Toast.LENGTH_SHORT).show();
 					break;
 			}
+			dataManager.saveData(tetheringState, mobileDataSim);
 		}
 		catch (Exception e)
 		{
