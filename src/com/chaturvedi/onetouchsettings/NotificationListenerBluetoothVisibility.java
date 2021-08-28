@@ -13,6 +13,7 @@ public class NotificationListenerBluetoothVisibility extends Activity
 		new ManagerBluetooth(this);
 		ManagerBluetooth.readBluetoothState();
 		ManagerBluetooth.toggleVisibility();
+		new NotificationProvider(this).createNotification();
 		finish();
 	}
 }

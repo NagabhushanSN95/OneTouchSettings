@@ -13,6 +13,7 @@ public class NotificationListenerMobileData extends Activity
 		new ManagerMobileData(this);
 		ManagerMobileData.readMobileDataState();
 		ManagerMobileData.toggleMobileDataState();
+		new NotificationProvider(this).createNotification();
 		finish();
 	}
 }

@@ -13,6 +13,7 @@ public class NotificationListenerBluetooth extends Activity
 		new ManagerBluetooth(this);
 		ManagerBluetooth.readBluetoothState();
 		ManagerBluetooth.toggleBluetoothState();
+		new NotificationProvider(this).createNotification();
 		finish();
 	}
 }

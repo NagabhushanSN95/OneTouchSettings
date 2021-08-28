@@ -18,6 +18,7 @@ public class NotificationListenerSound extends Activity
 		new ManagerAudio(this);
 		ManagerAudio.readAudioState((AudioManager)this.getSystemService(Context.AUDIO_SERVICE));
 		ManagerAudio.toggleSoundState();
+		new NotificationProvider(this).createNotification();
 		finish();
 	}
 }

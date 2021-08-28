@@ -16,6 +16,7 @@ public class NotificationListenerVibration extends Activity
 		new ManagerAudio(this);
 		ManagerAudio.readAudioState((AudioManager)this.getSystemService(Context.AUDIO_SERVICE));
 		ManagerAudio.toggleVibrationState();
+		new NotificationProvider(this).createNotification();
 		finish();
 	}
 }

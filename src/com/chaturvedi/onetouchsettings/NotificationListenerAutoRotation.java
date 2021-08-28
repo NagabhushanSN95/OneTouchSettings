@@ -13,6 +13,7 @@ public class NotificationListenerAutoRotation extends Activity
 		new ManagerDisplay(this);
 		ManagerDisplay.readDisplayState();
 		ManagerDisplay.toggleAutoRotationState();
+		new NotificationProvider(this).createNotification();
 		finish();
 	}
 }
