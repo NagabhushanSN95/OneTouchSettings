@@ -22,6 +22,7 @@ public class MainActivity extends Activity
 	private static ImageButton visibilityButton;
 	private static ImageButton soundButton;
 	private static ImageButton vibrationButton;
+	private static ImageButton autoRotationButton;
 	
 	private NotificationProvider notification;
 	
@@ -30,7 +31,7 @@ public class MainActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
 		wifiButton=(ImageButton)findViewById(R.id.wifi);
 		wifiButton.setOnClickListener(new WifiListener());
 		
@@ -51,7 +52,8 @@ public class MainActivity extends Activity
 		vibrationButton=(ImageButton)findViewById(R.id.vibrate);
 		vibrationButton.setOnClickListener(new VibrateListener());
 		
-		
+		autoRotationButton=(ImageButton)findViewById(R.id.auto_rotation);
+		autoRotationButton.setOnClickListener(new AutoRotationListener());
 		
 		new ManagerWifi(this);
 		ManagerWifi.readWifiState();
@@ -64,6 +66,9 @@ public class MainActivity extends Activity
 		
 		new ManagerAudio(this);
 		ManagerAudio.readAudioState((AudioManager)this.getSystemService(Context.AUDIO_SERVICE));
+		
+		new ManagerDisplay(this);
+		ManagerDisplay.readDisplayState();
 		
 		notification=new NotificationProvider(this);
 		notification.createNotification();
@@ -122,93 +127,87 @@ public class MainActivity extends Activity
 		visibilityButton.setImageResource(ManagerBluetooth.getVisibilityIcon());
 		soundButton.setImageResource(ManagerAudio.getSoundIcon());
 		vibrationButton.setImageResource(ManagerAudio.getVibrationIcon());
+		autoRotationButton.setImageResource(ManagerDisplay.getAutoRotationIcon());
 	}
 	
 	private class WifiListener implements OnClickListener
 	{
-
 		@Override
 		public void onClick(View v)
 		{
 			ManagerWifi.toggleWifiState();
 		}
-		
 	}
 	
 	private class TetheringListener implements OnClickListener
 	{
-
 		@Override
 		public void onClick(View v)
 		{
 			ManagerMobileData.toggleMobileDataSim();
 		}
-		
 	}
 	
 	private class InternetListener implements OnClickListener
 	{
-
 		@Override
 		public void onClick(View v)
 		{
 			ManagerMobileData.toggleMobileDataState();
 		}
-		
 	}
 	
 	private class MobileDataSimListener implements OnClickListener
 	{
-
 		@Override
 		public void onClick(View v)
 		{
 			ManagerMobileData.toggleMobileDataSim();
 		}
-		
 	}
 	
 	private class BluetoothListener implements OnClickListener
 	{
-
 		@Override
 		public void onClick(View v)
 		{
 			ManagerBluetooth.toggleBluetoothState();
 		}
-		
 	}
 	
 	private class VisibilityListener implements OnClickListener
 	{
-
 		@Override
 		public void onClick(View v)
 		{
 			ManagerBluetooth.toggleVisibility();
 		}
-		
 	}
 	
 	private class SoundListener implements OnClickListener
 	{
-
 		@Override
 		public void onClick(View v)
 		{
 			ManagerAudio.toggleSoundState();
 		}
-		
 	}
 	
 	private class VibrateListener implements OnClickListener
 	{
-
 		@Override
 		public void onClick(View v)
 		{
 			ManagerAudio.toggleVibrationState();
 		}
-		
+	}
+	
+	private class AutoRotationListener implements OnClickListener
+	{
+		@Override
+		public void onClick(View v)
+		{
+			ManagerDisplay.toggleAutoRotationState();
+		}
 	}
 }

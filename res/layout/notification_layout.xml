@@ -11,35 +11,46 @@
         android:layout_alignParentTop="true"
         android:text="@string/app_name" />
 
-    <ImageButton
-        android:id="@+id/notification_internet"
+    
+
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@+id/notification_title"
         android:layout_below="@+id/notification_title"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:background="#FFFFFF"
-        android:src="@drawable/notification_mobile_data_off" />
+        android:layout_marginTop="5dp" >
 
-    <ImageButton
-        android:id="@+id/notification_sound"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/notification_internet"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/notification_internet"
-        android:background="#FFFFFF"
-        android:src="@drawable/notification_sound_on" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+            
+            <ImageButton
+        	android:id="@+id/notification_internet"
+        	android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+        	android:layout_marginLeft="10dp"
+        	android:background="#FFFFFF"
+        	android:src="@drawable/notification_mobile_data_off" />
 
-    <ImageButton
-        android:id="@+id/notification_vibrate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/notification_sound"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/notification_sound"
-        android:background="#FFFFFF"
-        android:src="@drawable/notification_vibration_on" />
+    	    <ImageButton
+        	android:id="@+id/notification_sound"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_marginLeft="10dp"
+        	android:background="#FFFFFF"
+        	android:src="@drawable/notification_sound_on" />
+
+	    <ImageButton
+        	android:id="@+id/notification_vibrate"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_marginLeft="10dp"
+        	android:background="#FFFFFF"
+        	android:src="@drawable/notification_vibration_on" />
+	    
+        </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>
