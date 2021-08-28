@@ -102,4 +102,20 @@ public class ManagerBluetooth
 		else
 			return R.drawable.visibility_off;
 	}
+	
+	public static int getBluetoothNotificationIcon()
+	{
+		if(bluetoothState)
+			return R.drawable.notification_bluetooth_on;
+		else
+			return R.drawable.notification_bluetooth_off;
+	}
+	
+	public static int getVisibilityNotificationIcon()
+	{
+		if(visibilityState)
+			return R.drawable.notification_visibility_on;
+		else
+			return R.drawable.notification_visibility_off;
+	}
 }

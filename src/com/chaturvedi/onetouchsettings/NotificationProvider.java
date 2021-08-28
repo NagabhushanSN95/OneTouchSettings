@@ -9,9 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ImageButton;
 import android.widget.RemoteViews;
 
 public class NotificationProvider
@@ -30,9 +27,6 @@ public class NotificationProvider
 	private PendingIntent pendingBluetoothIntent;
 	private PendingIntent pendingBluetoothVisibilityIntent;
 	private PendingIntent pendingAutoRotationIntent;
-	
-	private LayoutInflater notificationLayout;
-	private View notificationLayoutView;
 	
 	public NotificationProvider(Activity activity)
 	{
@@ -107,99 +101,34 @@ public class NotificationProvider
 
 	private void setNotificationLayout()
 	{
-		notificationLayout=LayoutInflater.from(context);
-		notificationLayoutView=notificationLayout.inflate(R.layout.notification_layout, null);
-		ImageButton imageButton;
-		
-		new ManagerWifi(context);
-		new ManagerMobileData(context);
-		new ManagerBluetooth(context);
-		new ManagerAudio(context);
-
-		imageButton=(ImageButton)notificationLayoutView.findViewById(R.id.notification_internet);
-		if(ManagerMobileData.getMobileDataState())
-			imageButton.setImageResource(R.drawable.notification_mobile_data_on);
-		else
-			imageButton.setImageResource(R.drawable.notification_mobile_data_off);
-		
-		imageButton=(ImageButton)notificationLayoutView.findViewById(R.id.notification_sound);
-		if(ManagerAudio.getSoundState())
-			imageButton.setImageResource(R.drawable.notification_sound_on);
-		else
-			imageButton.setImageResource(R.drawable.notification_sound_off);
-		
-		imageButton=(ImageButton)notificationLayoutView.findViewById(R.id.notification_vibrate);
-		if(ManagerAudio.getVibrationState())
-			imageButton.setImageResource(R.drawable.notification_vibration_on);
-		else
-			imageButton.setImageResource(R.drawable.notification_vibration_off);
-		
-		//notificationView.removeAllViews(R.layout.notification_layout);
-		//notificationView.addView(R.layout.notification_layout, notificationView);
-		
-	}
-	
-	/*private void setNotificationLayout()
-	{
-		int mobileDataState, soundState, vibrationState;
 		new ManagerWifi(context);
 		new ManagerMobileData(context);
 		new ManagerBluetooth(context);
 		new ManagerAudio(context);
 		
+		// Set Image For Mobile Data Button
 		if(ManagerMobileData.getMobileDataState())
-			mobileDataState=1;
-		else
-			mobileDataState=0;
-		
-		if(ManagerAudio.getSoundState())
-			soundState=1;
-		else
-			soundState=0;
-		
-		if(ManagerAudio.getVibrationState())
-			vibrationState=1;
-		else
-			vibrationState=0;
-		
-		int state=Integer.parseInt(""+mobileDataState+""+soundState+""+vibrationState);
-		switch(state)
 		{
-			case 000:
-				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout_000);
-				break;
-				
-			case 001:
-				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout_001);
-				break;
-				
-			case 010:
-				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout_010);
-				break;
-				
-			case 011:
-				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout_011);
-				break;
-				
-			case 100:
-				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout_100);
-				break;
-				
-			case 101:
-				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout_101);
-				break;
-				
-			case 110:
-				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout_110);
-				break;
-				
-			case 111:
-				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout_111);
-				break;
-				
-			default:
-				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout);
-				break;
+			notificationView.setImageViewResource(R.id.notification_internet, R.drawable.notification_mobile_data_on);
 		}
-	}*/
+		else
+		{
+			notificationView.setImageViewResource(R.id.notification_internet, R.drawable.notification_mobile_data_off);
+		}
+		
+		// Set Image For Sound Button
+		notificationView.setImageViewResource(R.id.notification_sound, ManagerAudio.getSoundNotificationIcon());
+		
+		// Set Image For Sound Button
+		notificationView.setImageViewResource(R.id.notification_vibrate, ManagerAudio.getVibrationNotificationIcon());
+		
+		// Set Image For Bluetooth Button
+		notificationView.setImageViewResource(R.id.notification_bluetooth, ManagerBluetooth.getBluetoothNotificationIcon());
+		
+		// Set Image For Bluetooth Visibility Button
+		notificationView.setImageViewResource(R.id.notification_bluetooth_visibility, ManagerBluetooth.getVisibilityNotificationIcon());
+		
+		// Set Image For Auto Rotation Button
+		notificationView.setImageViewResource(R.id.notification_auto_rotation, ManagerDisplay.getAutoRotationNotificationIcon());
+	}
 }

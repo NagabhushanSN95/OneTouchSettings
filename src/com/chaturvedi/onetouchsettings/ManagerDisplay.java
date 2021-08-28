@@ -61,4 +61,12 @@ public class ManagerDisplay
 		else
 			return R.drawable.auto_rotation_off;
 	}
+	
+	public static int getAutoRotationNotificationIcon()
+	{
+		if(autoRotationState)
+			return R.drawable.notification_auto_rotation_on;
+		else
+			return R.drawable.notification_auto_rotation_off;
+	}
 }

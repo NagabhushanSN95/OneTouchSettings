@@ -70,4 +70,12 @@ public class ManagerWifi
 		else
 			return R.drawable.wifi_off;
 	}
+	
+	public static int getWifiNotificationIcon()
+	{
+		if(wifiState)
+			return R.drawable.notification_wifi_on;
+		else
+			return R.drawable.notification_wifi_off;
+	}
 }

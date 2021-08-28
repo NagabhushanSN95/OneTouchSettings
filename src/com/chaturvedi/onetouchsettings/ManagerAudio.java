@@ -146,4 +146,20 @@ public class ManagerAudio
 		else
 			return R.drawable.vibration_off;
 	}
+	
+	public static int getSoundNotificationIcon()
+	{
+		if(soundState)
+			return R.drawable.notification_sound_on;
+		else
+			return R.drawable.notification_sound_off;
+	}
+	
+	public static int getVibrationNotificationIcon()
+	{
+		if(vibrationState)
+			return R.drawable.notification_vibration_on;
+		else
+			return R.drawable.notification_vibration_off;
+	}
 }
