@@ -7,6 +7,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.os.Build;
+import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
 public class ManagerMobileData
@@ -198,7 +200,50 @@ public class ManagerMobileData
 		mobileDataState=state;
 		try
 		{
-			mobileDataMethod.invoke(mobileDataManager, mobileDataState);
+			int androidVersionNo = android.os.Build.VERSION.SDK_INT;
+			if(androidVersionNo < Build.VERSION_CODES.GINGERBREAD)
+			{
+				Method dataConnMethod;
+				Class telephonyManagerClass;
+				Object ITelephonyStub;
+				Class ITelephonyClass;
+				
+				TelephonyManager telephonyManager = 
+						(TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+				
+				/**
+				 * To check if data is on or not
+				 * /
+				if(telephonyManager.getDataState()==TelephonyManager.DATA_CONNECTED)
+				{
+					mobileDataState = true;
+				}
+				else
+				{
+					mobileDataState = false;
+				}*/
+				
+				telephonyManagerClass = Class.forName(telephonyManager.getClass().getName());
+				Method getITelephonyMethod = telephonyManagerClass.getDeclaredMethod("getITelephony");
+				getITelephonyMethod.setAccessible(true);
+				ITelephonyStub = getITelephonyMethod.invoke(telephonyManager);
+				ITelephonyClass = Class.forName(ITelephonyStub.getClass().getName());
+				
+				if(mobileDataState)
+				{
+					dataConnMethod = ITelephonyClass.getDeclaredMethod("disableDataConnectivity");
+				}
+				else
+				{
+					dataConnMethod = ITelephonyClass.getDeclaredMethod("enableDataConnectivity");
+				}
+				dataConnMethod.setAccessible(true);
+				dataConnMethod.invoke(ITelephonyStub);
+			}
+			else
+			{
+				mobileDataMethod.invoke(mobileDataManager, mobileDataState);
+			}
 		}
 		catch(Exception e)
 		{

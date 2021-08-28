@@ -13,7 +13,6 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -85,7 +84,7 @@ public class MainActivity extends Activity
 		ManagerMobileData.readMobileDataState();
 		
 		new ManagerBluetooth(this);
-		ManagerBluetooth.readBluetoothState();
+		//ManagerBluetooth.readBluetoothState();
 		
 		new ManagerAudio(this);
 		ManagerAudio.readAudioState((AudioManager)this.getSystemService(Context.AUDIO_SERVICE));
@@ -100,13 +99,13 @@ public class MainActivity extends Activity
 		timer.scheduleAtFixedRate(refresher, 0, 1000);
 	}
 
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
-	}
+	}*/
 
 	public  class Refresh extends TimerTask
 	{
@@ -126,7 +125,7 @@ public class MainActivity extends Activity
 					ManagerMobileData.readMobileDataState();
 					
 					new ManagerBluetooth(MainActivity.this);
-					ManagerBluetooth.readBluetoothState();
+					//ManagerBluetooth.readBluetoothState();
 					
 					new ManagerAudio(MainActivity.this);
 					ManagerAudio.readAudioState((AudioManager)MainActivity.this.getSystemService(Context.AUDIO_SERVICE));
