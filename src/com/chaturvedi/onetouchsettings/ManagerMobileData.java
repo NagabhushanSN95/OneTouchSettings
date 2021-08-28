@@ -158,7 +158,7 @@ public class ManagerMobileData
 	                        //Integer code = (Integer) method.invoke(tetheringManager, "usb0");
 	                    	//code = (Integer) method.invoke(tetheringManager, "setting TH");
 	                    	
-	            			dataManager.saveData(tetheringState, mobileDataSim);
+	            			dataManager.saveAllStates(tetheringState, mobileDataSim);
 	                    }
 	                    catch (IllegalArgumentException e)
 	                    {
@@ -251,7 +251,7 @@ public class ManagerMobileData
 					Toast.makeText(context, "Data Network "+"Changed To Default Sim 1", Toast.LENGTH_SHORT).show();
 					break;
 			}
-			dataManager.saveData(tetheringState, mobileDataSim);
+			dataManager.saveAllStates (tetheringState, mobileDataSim);
 		}
 		catch (Exception e)
 		{
@@ -296,5 +296,13 @@ public class ManagerMobileData
 			return R.drawable.usb_tethering_on;
 		else
 			return R.drawable.usb_tethering_off;
+	}
+	
+	public static int getMobileDataNotificationIcon()
+	{
+		if(mobileDataState)
+			return R.drawable.notification_mobile_data_on;
+		else
+			return R.drawable.notification_mobile_data_off;
 	}
 }

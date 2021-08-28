@@ -16,10 +16,38 @@ public class StateChangeReceiver extends BroadcastReceiver
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		/*new ManagerMobileData(context);
-		ManagerMobileData.readMobileDataState();
-		ManagerMobileData.toggleMobileDataState();*/
 		final NotificationProvider notification = new NotificationProvider(context);
+		notification.createNotification();
+		
+		new Handler().postDelayed(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				notification.createNotification();
+			}
+			
+		}, 500);
+		
+		new Handler().postDelayed(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				notification.createNotification();
+			}
+			
+		}, 1000);
+		
+		new Handler().postDelayed(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				notification.createNotification();
+			}
+			
+		}, 2000);
 		
 		new Handler().postDelayed(new Runnable()
 		{

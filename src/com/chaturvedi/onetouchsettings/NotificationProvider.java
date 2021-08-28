@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
@@ -21,6 +22,7 @@ public class NotificationProvider
 	private RemoteViews notificationView;
 	private Intent notificationIntent;
 	private PendingIntent pendingNotificationIntent;
+	private PendingIntent pendingWifiIntent;
 	private PendingIntent pendingMobileDataIntent;
 	private PendingIntent pendingSoundIntent;
 	private PendingIntent pendingVibrationIntent;
@@ -60,7 +62,7 @@ public class NotificationProvider
 			
 			notification=notificationBuilder.build();
 			manager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-			manager.notify(R.id.notification_sound, notification);
+			manager.notify(R.id.notification_layout, notification);
 		}
 		else
 		{
@@ -78,43 +80,31 @@ public class NotificationProvider
 			notification.contentView=notificationView;
 			notification.contentIntent=pendingNotificationIntent;
 			notification.flags=Notification.FLAG_NO_CLEAR;
-
-			Intent newIntent=new Intent(context, NotificationListenerVibration.class);
-			newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			pendingMobileDataIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerMobileData.class), PendingIntent.FLAG_UPDATE_CURRENT);
-			notificationView.setOnClickPendingIntent(R.id.notification_internet, pendingMobileDataIntent);
-			pendingSoundIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerSound.class), PendingIntent.FLAG_UPDATE_CURRENT);
-			notificationView.setOnClickPendingIntent(R.id.notification_sound, pendingSoundIntent);
-			pendingVibrationIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerVibration.class), PendingIntent.FLAG_UPDATE_CURRENT);
-			notificationView.setOnClickPendingIntent(R.id.notification_vibrate, pendingVibrationIntent);
-			pendingBluetoothIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerBluetooth.class), PendingIntent.FLAG_UPDATE_CURRENT);
-			notificationView.setOnClickPendingIntent(R.id.notification_bluetooth, pendingBluetoothIntent);
-			pendingBluetoothVisibilityIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerBluetoothVisibility.class), PendingIntent.FLAG_UPDATE_CURRENT);
-			notificationView.setOnClickPendingIntent(R.id.notification_bluetooth_visibility, pendingBluetoothVisibilityIntent);
-			pendingAutoRotationIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerAutoRotation.class), PendingIntent.FLAG_UPDATE_CURRENT);
-			notificationView.setOnClickPendingIntent(R.id.notification_auto_rotation, pendingAutoRotationIntent);
+			setBroadcastActions();
 			
 			manager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-			manager.notify(R.id.notification_sound, notification);
+			manager.notify(R.id.notification_layout, notification);
 		}
 	}
 
 	private void setNotificationLayout()
 	{
 		new ManagerWifi(context);
+		ManagerWifi.readWifiState();
 		new ManagerMobileData(context);
+		ManagerMobileData.readMobileDataState();
 		new ManagerBluetooth(context);
+		ManagerBluetooth.readBluetoothState();
 		new ManagerAudio(context);
+		ManagerAudio.readAudioState((AudioManager)context.getSystemService(Context.AUDIO_SERVICE));
+		new ManagerDisplay(context);
+		ManagerDisplay.readDisplayState();
+		
+		// Set Image For Wifi Button
+		notificationView.setImageViewResource(R.id.notification_wifi, ManagerWifi.getWifiNotificationIcon());
 		
 		// Set Image For Mobile Data Button
-		if(ManagerMobileData.getMobileDataState())
-		{
-			notificationView.setImageViewResource(R.id.notification_internet, R.drawable.notification_mobile_data_on);
-		}
-		else
-		{
-			notificationView.setImageViewResource(R.id.notification_internet, R.drawable.notification_mobile_data_off);
-		}
+		notificationView.setImageViewResource(R.id.notification_internet, ManagerMobileData.getMobileDataNotificationIcon());
 		
 		// Set Image For Sound Button
 		notificationView.setImageViewResource(R.id.notification_sound, ManagerAudio.getSoundNotificationIcon());
@@ -130,5 +120,56 @@ public class NotificationProvider
 		
 		// Set Image For Auto Rotation Button
 		notificationView.setImageViewResource(R.id.notification_auto_rotation, ManagerDisplay.getAutoRotationNotificationIcon());
+	}
+	
+	private void setBroadcastActions()
+	{
+		Intent wifiIntent = new Intent("Wifi");
+		wifiIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		pendingWifiIntent = PendingIntent.getBroadcast(context, 0, wifiIntent, 0);
+		notificationView.setOnClickPendingIntent(R.id.notification_wifi, pendingWifiIntent);
+		
+		Intent mobileDataIntent = new Intent("Mobile_Data");
+		mobileDataIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		pendingMobileDataIntent = PendingIntent.getBroadcast(context, 0, mobileDataIntent, 0);
+		notificationView.setOnClickPendingIntent(R.id.notification_internet, pendingMobileDataIntent);
+		
+		Intent soundIntent = new Intent("Sound");
+		soundIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		pendingSoundIntent = PendingIntent.getBroadcast(context, 0, soundIntent, 0);
+		notificationView.setOnClickPendingIntent(R.id.notification_sound, pendingSoundIntent);
+		
+		Intent vibrationIntent = new Intent("Vibration");
+		vibrationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		pendingVibrationIntent = PendingIntent.getBroadcast(context, 0, vibrationIntent, 0);
+		notificationView.setOnClickPendingIntent(R.id.notification_vibrate, pendingVibrationIntent);
+		
+		Intent bluetoothIntent = new Intent("Bluetooth");
+		bluetoothIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		pendingBluetoothIntent = PendingIntent.getBroadcast(context, 0, bluetoothIntent, 0);
+		notificationView.setOnClickPendingIntent(R.id.notification_bluetooth, pendingBluetoothIntent);
+		
+		Intent bluetoothVisibilityIntent = new Intent("Bluetooth_Visibility");
+		bluetoothVisibilityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		pendingBluetoothVisibilityIntent = PendingIntent.getBroadcast(context, 0, bluetoothVisibilityIntent, 0);
+		notificationView.setOnClickPendingIntent(R.id.notification_bluetooth_visibility, pendingBluetoothVisibilityIntent);
+		
+		Intent autoRotationIntent = new Intent("Auto_Rotation");
+		autoRotationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		pendingAutoRotationIntent = PendingIntent.getBroadcast(context, 0, autoRotationIntent, 0);
+		notificationView.setOnClickPendingIntent(R.id.notification_auto_rotation, pendingAutoRotationIntent);
+		
+		/*//pendingMobileDataIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerMobileData.class), PendingIntent.FLAG_UPDATE_CURRENT);
+		//notificationView.setOnClickPendingIntent(R.id.notification_internet, pendingMobileDataIntent);
+		//pendingSoundIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerSound.class), PendingIntent.FLAG_UPDATE_CURRENT);
+		//notificationView.setOnClickPendingIntent(R.id.notification_sound, pendingSoundIntent);
+		pendingVibrationIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerVibration.class), PendingIntent.FLAG_UPDATE_CURRENT);
+		notificationView.setOnClickPendingIntent(R.id.notification_vibrate, pendingVibrationIntent);
+		pendingBluetoothIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerBluetooth.class), PendingIntent.FLAG_UPDATE_CURRENT);
+		notificationView.setOnClickPendingIntent(R.id.notification_bluetooth, pendingBluetoothIntent);
+		pendingBluetoothVisibilityIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerBluetoothVisibility.class), PendingIntent.FLAG_UPDATE_CURRENT);
+		notificationView.setOnClickPendingIntent(R.id.notification_bluetooth_visibility, pendingBluetoothVisibilityIntent);
+		pendingAutoRotationIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerAutoRotation.class), PendingIntent.FLAG_UPDATE_CURRENT);
+		notificationView.setOnClickPendingIntent(R.id.notification_auto_rotation, pendingAutoRotationIntent);*/
 	}
 }

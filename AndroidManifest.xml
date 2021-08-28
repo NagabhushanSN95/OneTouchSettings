@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.chaturvedi.onetouchsettings"
-    android:versionCode="025"
-    android:versionName="2.0.8" >
+    android:versionCode="026"
+    android:versionName="2.0.9" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -33,12 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.chaturvedi.onetouchsettings.NotificationListenerMobileData"></activity>
-        <activity android:name="com.chaturvedi.onetouchsettings.NotificationListenerSound"></activity>
-        <activity android:name="com.chaturvedi.onetouchsettings.NotificationListenerVibration"></activity>
-        <activity android:name="com.chaturvedi.onetouchsettings.NotificationListenerBluetooth"></activity>
-        <activity android:name="com.chaturvedi.onetouchsettings.NotificationListenerBluetoothVisibility"></activity>
-        <activity android:name="com.chaturvedi.onetouchsettings.NotificationListenerAutoRotation"></activity>
         
         <receiver 
             android:name="com.chaturvedi.onetouchsettings.SwitchOnReceiver"
@@ -46,6 +40,20 @@
             android:exported="true">
             <intent-filter >
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        
+        <receiver
+            android:name="com.chaturvedi.onetouchsettings.NotificationReceiver" 
+            android:exported="false">
+            <intent-filter >
+                <action android:name="Wifi" />
+                <action android:name="Mobile_Data" />
+                <action android:name="Sound"/>
+                <action android:name="Vibration"/>
+                <action android:name="Bluetooth"/>
+                <action android:name="Bluetooth_Visibility"/>
+                <action android:name="Auto_Rotation"/>
             </intent-filter>
         </receiver>
         

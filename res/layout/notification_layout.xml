@@ -1,24 +1,25 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/notification_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsActivity" >
+    android:layout_marginTop="10dp"
+    android:orientation="horizontal"
+    tools:context=".MainActivity" >
 
-    <TextView
-        android:id="@+id/notification_title"
+    <ImageButton
+        android:id="@+id/notification_wifi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="@string/app_name" />
+        android:layout_marginLeft="10dp"
+        android:background="#FFFFFF"
+        android:src="@drawable/notification_wifi_off" />
 
     <ImageButton
         android:id="@+id/notification_internet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/notification_title"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
         android:background="#FFFFFF"
         android:src="@drawable/notification_mobile_data_off" />
 
@@ -26,9 +27,7 @@
         android:id="@+id/notification_sound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/notification_internet"
         android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/notification_internet"
         android:background="#FFFFFF"
         android:src="@drawable/notification_sound_off" />
 
@@ -36,9 +35,7 @@
         android:id="@+id/notification_vibrate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/notification_sound"
         android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/notification_sound"
         android:background="#FFFFFF"
         android:src="@drawable/notification_vibration_off" />
 
@@ -46,9 +43,7 @@
         android:id="@+id/notification_bluetooth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/notification_vibrate"
         android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/notification_vibrate"
         android:background="#FFFFFF"
         android:src="@drawable/notification_bluetooth_off" />
 
@@ -56,9 +51,7 @@
         android:id="@+id/notification_bluetooth_visibility"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/notification_bluetooth"
         android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/notification_bluetooth"
         android:background="#FFFFFF"
         android:src="@drawable/notification_visibility_off" />
 
@@ -66,10 +59,8 @@
         android:id="@+id/notification_auto_rotation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/notification_bluetooth_visibility"
         android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/notification_bluetooth_visibility"
         android:background="#FFFFFF"
         android:src="@drawable/notification_auto_rotation_off" />
 
-</RelativeLayout>
+</LinearLayout>

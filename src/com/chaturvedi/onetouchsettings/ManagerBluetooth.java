@@ -69,6 +69,7 @@ public class ManagerBluetooth
 		}
 		Intent visibilityIntent=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 		visibilityIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, numSeconds);
+		visibilityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(visibilityIntent);
 	}
 	
