@@ -5,10 +5,10 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 
-public class SilentNotificationListener extends Activity
+public class SoundNotificationListener extends Activity
 {
 	private AudioManager audioManager;
-	private boolean silentState;
+	private boolean soundState;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -18,9 +18,9 @@ public class SilentNotificationListener extends Activity
 		
 		audioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
 		PhoneStateManager.readAudioState(audioManager);
-		silentState=PhoneStateManager.getSilentState();
-		silentState=!silentState;													// Toggle State
-		PhoneStateManager.setSilentState(silentState);
+		soundState=PhoneStateManager.getSoundState();
+		soundState=!soundState;													// Toggle State
+		PhoneStateManager.setSoundState(soundState);
 		finish();
 	}
 }

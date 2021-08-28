@@ -20,7 +20,7 @@ public class NotificationProvider
 	private Intent notificationIntent;
 	private PendingIntent pendingNotificationIntent;
 	private PendingIntent pendingMobileDataIntent;
-	private PendingIntent pendingSilentIntent;
+	private PendingIntent pendingSoundIntent;
 	private PendingIntent pendingVibrationIntent;
 	
 	public NotificationProvider(Activity activity)
@@ -47,35 +47,35 @@ public class NotificationProvider
 
 		pendingMobileDataIntent=PendingIntent.getActivity(context, 0, new Intent(context, MobileDataNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
 		notificationView.setOnClickPendingIntent(R.id.notification_internet, pendingMobileDataIntent);
-		pendingSilentIntent=PendingIntent.getActivity(context, 0, new Intent(context, SilentNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
-		notificationView.setOnClickPendingIntent(R.id.notification_silent, pendingSilentIntent);
+		pendingSoundIntent=PendingIntent.getActivity(context, 0, new Intent(context, SoundNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
+		notificationView.setOnClickPendingIntent(R.id.notification_sound, pendingSoundIntent);
 		pendingVibrationIntent=PendingIntent.getActivity(context, 0, new Intent(context, VibrationNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
 		notificationView.setOnClickPendingIntent(R.id.notification_vibrate, pendingVibrationIntent);
 		
 		manager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.notify(R.id.notification_silent, notification);
+		manager.notify(R.id.notification_sound, notification);
 	}
 	
 	private void setNotificationLayout()
 	{
-		int mobileDataState, silentState, vibrationState;
+		int mobileDataState, soundState, vibrationState;
 		PhoneStateManager.readPhoneState(context);
 		if(PhoneStateManager.getMobileDataState())
 			mobileDataState=1;
 		else
 			mobileDataState=0;
 		
-		if(!PhoneStateManager.getSilentState())
-			silentState=1;
+		if(PhoneStateManager.getSoundState())
+			soundState=1;
 		else
-			silentState=0;
+			soundState=0;
 		
 		if(PhoneStateManager.getVibrationState())
 			vibrationState=1;
 		else
 			vibrationState=0;
 		
-		int state=Integer.parseInt(""+mobileDataState+""+silentState+""+vibrationState);
+		int state=Integer.parseInt(""+mobileDataState+""+soundState+""+vibrationState);
 		switch(state)
 		{
 			case 000:

@@ -5,9 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,34 +15,24 @@ import android.widget.ImageButton;
 
 public class MainActivity extends Activity
 {
+	private static boolean wifiState;
 	private static boolean mobileDataState;
 	private static boolean bluetoothState;
 	private static boolean visibilityState;
-	private static boolean silentState;
+	private static boolean soundState;
 	private static boolean vibrationState;
-	
+
+	private static ImageButton wifiButton;
 	private static ImageButton internetButton;
 	private static ImageButton bluetoothButton;
 	private static ImageButton visibilityButton;
-	private static ImageButton silentButton;
+	private static ImageButton soundButton;
 	private static ImageButton vibrateButton;
 	
 	private static ConnectivityManager mobileDataManager;
 	private static Method mobileDataMethod;
-	private static BluetoothAdapter bluetoothManager;
-	private static AudioManager audioManager;
 	
 	private NotificationProvider notification;
-	/*private NotificationCompat.Builder notificationBuilder;
-	private NotificationManager manager;
-	private Notification notification;
-	private RemoteViews notificationView;
-	private Intent notificationIntent;
-	private PendingIntent pendingNotificationIntent;
-	private PendingIntent pendingMobileDataIntent;
-	private PendingIntent pendingSilentIntent;
-	private PendingIntent pendingVibrationIntent;
-	private TaskStackBuilder stackBuilder;*/
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -52,6 +40,8 @@ public class MainActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		wifiButton=(ImageButton)findViewById(R.id.wifi);
+		wifiButton.setOnClickListener(new WifiListener());
 		internetButton=(ImageButton)findViewById(R.id.internet);
 		internetButton.setOnClickListener(new InternetListener());
 		bluetoothButton=(ImageButton)findViewById(R.id.bluetooth);
@@ -59,8 +49,8 @@ public class MainActivity extends Activity
 		visibilityButton=(ImageButton)findViewById(R.id.bluetooth_visibility);
 		visibilityButton.setOnClickListener(new VisibilityListener());
 		
-		silentButton=(ImageButton)findViewById(R.id.silent);
-		silentButton.setOnClickListener(new SilentListener());
+		soundButton=(ImageButton)findViewById(R.id.sound);
+		soundButton.setOnClickListener(new SoundListener());
 		vibrateButton=(ImageButton)findViewById(R.id.vibrate);
 		vibrateButton.setOnClickListener(new VibrateListener());
 		try
@@ -68,21 +58,18 @@ public class MainActivity extends Activity
 			mobileDataManager=(ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 			mobileDataMethod=ConnectivityManager.class.getDeclaredMethod("setMobileDataEnabled", boolean.class);
 			mobileDataMethod.setAccessible(true);
-			
-			bluetoothManager=BluetoothAdapter.getDefaultAdapter();
-			audioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
 		}
 		catch(Exception e)
 		{
 			
 		}
 		PhoneStateManager.readPhoneState(this);
-		readPhoneState();
-		silentState=PhoneStateManager.getSilentState();
+		wifiState=PhoneStateManager.getWifiState();
+		readMobileDataState();
+		bluetoothState=PhoneStateManager.getBluetoothState();
+		visibilityState=PhoneStateManager.getVisibilityState();
+		soundState=PhoneStateManager.getSoundState();
 		vibrationState=PhoneStateManager.getVibrationState();
-		setMobileData(mobileDataState);
-		setSilentMode(silentState);
-		setVibration(vibrationState);
 		notification=new NotificationProvider(this);
 		notification.createNotification();
 		Timer timer=new Timer();
@@ -94,7 +81,7 @@ public class MainActivity extends Activity
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.settings, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -108,6 +95,15 @@ public class MainActivity extends Activity
 				@Override
 				public void run()
 				{
+					PhoneStateManager.readPhoneState(MainActivity.this);
+					wifiState=PhoneStateManager.getWifiState();
+					readMobileDataState();
+					bluetoothState=PhoneStateManager.getBluetoothState();
+					visibilityState=PhoneStateManager.getVisibilityState();
+					soundState=PhoneStateManager.getSoundState();
+					vibrationState=PhoneStateManager.getVibrationState();
+					setIcons();
+					
 					notification.createNotification();
 				}
 			});
@@ -116,7 +112,7 @@ public class MainActivity extends Activity
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void readPhoneState()
+	private void readMobileDataState()
 	{
 		try
 		{
@@ -129,82 +125,10 @@ public class MainActivity extends Activity
 		{
 			
 		}
-		/*int ringerMode=audioManager.getRingerMode();
-		if(ringerMode==AudioManager.RINGER_MODE_NORMAL)
-		{
-			silentState=false;
-			if(audioManager.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER)==AudioManager.VIBRATE_SETTING_ON)
-				vibrationState=true;
-			else
-				vibrationState=false;
-		}
-		else if(ringerMode==AudioManager.RINGER_MODE_SILENT)
-		{
-			silentState=true;
-			vibrationState=false;
-		}
-		else if(ringerMode==AudioManager.RINGER_MODE_VIBRATE)
-		{
-			silentState=true;
-			vibrationState=true;
-		}
-		
-		if(mobileDataState)
-			internetButton.setImageResource(R.drawable.mobile_data_on);
-		else
-			internetButton.setImageResource(R.drawable.mobile_data_off);
-		
-		if(silentState)
-			silentButton.setImageResource(R.drawable.silent);
-		else
-			silentButton.setImageResource(R.drawable.sound);
-		
-		if(vibrationState)
-			vibrateButton.setImageResource(R.drawable.vibration_on);
-		else
-			vibrateButton.setImageResource(R.drawable.vibration_off);*/
 	}
-	
-	/*@SuppressLint({ "InlinedApi", "NewApi" })
-	private void buildNotification()
-	{
-		notificationBuilder=new NotificationCompat.Builder(this);
-		notificationBuilder.setSmallIcon(R.drawable.app_icon);
-		notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
-		notificationBuilder.setContentTitle("ONE TOUCH SETTINGS");
-		notificationBuilder.setContentText("Tap To Open  \"One Touch Settings\"");
-		notificationBuilder.setOngoing(true);
-		
-		/*
-		stackBuilder=TaskStackBuilder.create(this);
-		stackBuilder.addParentStack(SettingsActivity.class);
-		stackBuilder.addNextIntent(notificationIntent);
-		resultPendingIntent=stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-		notificationBuilder.setContentIntent(resultPendingIntent);
-		notification=notificationBuilder.build();/
-		
-		notificationView=new RemoteViews(getPackageName(), R.layout.notification_layout);
-		notificationIntent=new Intent(this, SettingsActivity.class);
-		pendingNotificationIntent=PendingIntent.getActivity(this, 0, notificationIntent, 0);
-		notification=notificationBuilder.build();
-		notification.contentView=notificationView;
-		notification.contentIntent=pendingNotificationIntent;
-		notification.flags=Notification.FLAG_NO_CLEAR;
-		
-		pendingSilentIntent=PendingIntent.getActivity(this, 0, new Intent(this, SilentNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
-		notificationView.setOnClickPendingIntent(R.id.notification_silent, pendingSilentIntent);
-		
-		manager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.notify(R.id.notification_silent, notification);
-	}*/
 	
 	public void setMobileData(boolean action)
 	{
-		mobileDataState=action;
-		if(mobileDataState)
-			internetButton.setImageResource(R.drawable.mobile_data_on);
-		else
-			internetButton.setImageResource(R.drawable.mobile_data_off);
 		try
 		{
 			mobileDataMethod.invoke(mobileDataManager, mobileDataState);
@@ -215,72 +139,49 @@ public class MainActivity extends Activity
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
-	public void setSilentMode(boolean action)
+	private void setIcons()
 	{
-		silentState=action;
-		if(silentState)
-			silentButton.setImageResource(R.drawable.silent);
+		if(wifiState)
+			wifiButton.setImageResource(R.drawable.wifi_on);
 		else
-			silentButton.setImageResource(R.drawable.sound);
-		if(silentState)
-		{
-			if(vibrationState)
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);		// Silent And Vibrate
-			}
-			else
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);		// Only Silent, No Vibration
-			}
-		}
+			wifiButton.setImageResource(R.drawable.wifi_off);
+		
+		if(mobileDataState)
+			internetButton.setImageResource(R.drawable.mobile_data_on);
 		else
-		{
-			if(vibrationState)
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Normal And Vibrate??
-				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
-			}
-			else
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Only Normal, No Vibration??
-				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
-			}
-		}
-	}
-	
-	@SuppressWarnings("deprecation")
-	private void setVibration(boolean action)
-	{
-		vibrationState=action;
+			internetButton.setImageResource(R.drawable.mobile_data_off);
+		
+		if(bluetoothState)
+			bluetoothButton.setImageResource(R.drawable.bluetooth_on);
+		else
+			bluetoothButton.setImageResource(R.drawable.bluetooth_off);
+		
+		if(visibilityState)
+			visibilityButton.setImageResource(R.drawable.visibility_on);
+		else
+			visibilityButton.setImageResource(R.drawable.visibility_off);
+		
+		if(soundState)
+			soundButton.setImageResource(R.drawable.sound_on);
+		else
+			soundButton.setImageResource(R.drawable.sound_off);
+		
 		if(vibrationState)
 			vibrateButton.setImageResource(R.drawable.vibration_on);
 		else
 			vibrateButton.setImageResource(R.drawable.vibration_off);
-		if(vibrationState)
+	}
+	
+	private class WifiListener implements OnClickListener
+	{
+
+		@Override
+		public void onClick(View v)
 		{
-			if(silentState)
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);		// Silent And Vibrate
-			}
-			else
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Normal And Vibrate??
-				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
-			}
+			wifiState=!wifiState;
+			PhoneStateManager.setWifiState(wifiState);
 		}
-		else
-		{
-			if(silentState)
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);		// Only Silent, No Vibration
-			}
-			else
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Only Normal, No Vibration??
-				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
-			}
-		}
+		
 	}
 	
 	private class InternetListener implements OnClickListener
@@ -302,7 +203,7 @@ public class MainActivity extends Activity
 		public void onClick(View v)
 		{
 			bluetoothState=!bluetoothState;
-			setMobileData(bluetoothState);
+			PhoneStateManager.setBluetoothState(bluetoothState);
 		}
 		
 	}
@@ -313,32 +214,20 @@ public class MainActivity extends Activity
 		@Override
 		public void onClick(View v)
 		{
-			visibilityState=!visibilityState;
-			setMobileData(visibilityState);
+			PhoneStateManager.setVisibility();
 		}
 		
 	}
 	
-	private class SilentListener implements OnClickListener
+	private class SoundListener implements OnClickListener
 	{
 
 		@Override
 		public void onClick(View v)
 		{
-			silentState=!silentState;
-			setSilentMode(silentState);
+			soundState=!soundState;
+			PhoneStateManager.setSoundState(soundState);
 		}
-
-		/*@Override
-		public void onReceive(Context arg0, Intent arg1)
-		{
-			silentState=!silentState;
-			if(silentState)
-				silentButton.setImageResource(R.drawable.silent);
-			else
-				silentButton.setImageResource(R.drawable.sound);
-			setSilentMode(silentState);
-		}*/
 		
 	}
 	
@@ -349,7 +238,7 @@ public class MainActivity extends Activity
 		public void onClick(View v)
 		{
 			vibrationState=!vibrationState;
-			setVibration(vibrationState);
+			PhoneStateManager.setVibrationState(vibrationState);
 		}
 		
 	}

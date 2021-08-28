@@ -5,19 +5,23 @@ import java.lang.reflect.Method;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 public class PhoneStateManager extends Activity
 {
+	private static boolean wifiState;
 	private static boolean mobileDataState;
 	private static boolean bluetoothState;
 	private static boolean visibilityState;
-	private static boolean silentState;
+	private static boolean soundState;
 	private static boolean vibrationState;
 	
 	private static Activity context;
+	private static WifiManager wifiManager;
 	private static ConnectivityManager mobileDataManager;
 	private static Method mobileDataMethod;
 	private static BluetoothAdapter bluetoothManager;
@@ -26,13 +30,20 @@ public class PhoneStateManager extends Activity
 	public static void readPhoneState(Activity activity)
 	{
 		context=activity;
-		readMobileDataState();
+		readInternetState();
+		readBluetoothState();
 		readAudioState((AudioManager)context.getSystemService(Context.AUDIO_SERVICE));
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void readMobileDataState()
+	public static void readInternetState()
 	{
+		wifiManager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+		if(wifiManager.getWifiState()==WifiManager.WIFI_STATE_ENABLED)
+			wifiState=true;
+		else
+			wifiState=false;
+		
 		try
 		{
 			mobileDataManager=(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -68,7 +79,7 @@ public class PhoneStateManager extends Activity
 		int ringerMode=audioManager.getRingerMode();
 		if(ringerMode==AudioManager.RINGER_MODE_NORMAL)
 		{
-			silentState=false;
+			soundState=true;
 			if(audioManager.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER)==AudioManager.VIBRATE_SETTING_ON)
 				vibrationState=true;
 			else
@@ -76,14 +87,25 @@ public class PhoneStateManager extends Activity
 		}
 		else if(ringerMode==AudioManager.RINGER_MODE_SILENT)
 		{
-			silentState=true;
+			soundState=false;
 			vibrationState=false;
 		}
 		else if(ringerMode==AudioManager.RINGER_MODE_VIBRATE)
 		{
-			silentState=true;
+			soundState=false;
 			vibrationState=true;
 		}
+	}
+	
+	public static void setWifiState(boolean state)
+	{
+		wifiState=state;
+		wifiManager.setWifiEnabled(wifiState);
+	}
+	
+	public static boolean getWifiState()
+	{
+		return wifiState;
 	}
 	
 	public static void setMobileDataState(boolean state)
@@ -120,25 +142,27 @@ public class PhoneStateManager extends Activity
 		return bluetoothState;
 	}
 	
-	public static void setVisibilityState(boolean state)
+	public static void setVisibility()
 	{
-		visibilityState=state;
-		if(bluetoothState)
-			bluetoothManager.startDiscovery();
-		else
-			bluetoothManager.cancelDiscovery();
+		Intent visibilityIntent=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+		visibilityIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+		context.startActivity(visibilityIntent);
 	}
 	
 	public static boolean getVisibilityState()
 	{
+		if(bluetoothManager.getScanMode()==BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE)
+			visibilityState=true;
+		else
+			visibilityState=false;
 		return visibilityState;
 	}
 	
 	@SuppressWarnings("deprecation")
-	public static void setSilentState(boolean state)
+	public static void setSoundState(boolean state)
 	{
-		silentState=state;
-		if(silentState)
+		soundState=state;
+		if(!soundState)
 		{
 			if(vibrationState)
 			{
@@ -153,20 +177,20 @@ public class PhoneStateManager extends Activity
 		{
 			if(vibrationState)
 			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Normal And Vibrate??
+				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Sound And Vibrate
 				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
 			}
 			else
 			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Only Normal, No Vibration??
+				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Only Sound, No Vibration
 				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
 			}
 		}
 	}
 	
-	public static boolean getSilentState()
+	public static boolean getSoundState()
 	{
-		return silentState;
+		return soundState;
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -175,25 +199,25 @@ public class PhoneStateManager extends Activity
 		vibrationState=state;
 		if(vibrationState)
 		{
-			if(silentState)
+			if(!soundState)
 			{
 				audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);		// Silent And Vibrate
 			}
 			else
 			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Normal And Vibrate??
+				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Sound And Vibrate
 				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
 			}
 		}
 		else
 		{
-			if(silentState)
+			if(!soundState)
 			{
 				audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);		// Only Silent, No Vibration
 			}
 			else
 			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Only Normal, No Vibration??
+				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Only Sound, No Vibration??
 				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
 			}
 		}

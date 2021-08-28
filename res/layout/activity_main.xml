@@ -33,12 +33,12 @@
             	android:orientation="horizontal" >
                 
                 <ImageButton
-                    android:id="@+id/wi-fi"
+                    android:id="@+id/wifi"
         	    android:layout_width="wrap_content"
         	    android:layout_height="wrap_content"
         	    android:layout_marginLeft="10dp"
         	    android:background="#FFFFFF"
-        	    android:src="@drawable/mobile_data_off" />
+        	    android:src="@drawable/wifi_off" />
                 
                 <ImageButton
                     android:id="@+id/internet"
@@ -54,7 +54,7 @@
         	    android:layout_height="wrap_content"
         	    android:layout_marginLeft="10dp"
         	    android:background="#FFFFFF"
-        	    android:src="@drawable/mobile_data_off" />
+        	    android:src="@drawable/bluetooth_off" />
                 
                 <ImageButton
                     android:id="@+id/bluetooth_visibility"
@@ -62,7 +62,7 @@
         	    android:layout_height="wrap_content"
         	    android:layout_marginLeft="10dp"
         	    android:background="#FFFFFF"
-        	    android:src="@drawable/mobile_data_off" />
+        	    android:src="@drawable/visibility_off" />
             </LinearLayout>
             
             <LinearLayout
@@ -72,12 +72,12 @@
             	android:orientation="horizontal" >
                 
                 <ImageButton
-        	    android:id="@+id/silent"
+        	    android:id="@+id/sound"
         	    android:layout_width="wrap_content"
         	    android:layout_height="wrap_content"
         	    android:layout_marginLeft="10dp"
         	    android:background="#FFFFFF"
-        	    android:src="@drawable/sound" />
+        	    android:src="@drawable/sound_on" />
 
     		<ImageButton
         	    android:id="@+id/vibrate"
@@ -86,6 +86,7 @@
         	    android:layout_marginLeft="10dp"
         	    android:background="#FFFFFF"
         	    android:src="@drawable/vibration_on" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
