@@ -125,37 +125,37 @@ public class NotificationProvider
 	private void setBroadcastActions()
 	{
 		Intent wifiIntent = new Intent("Wifi");
-		wifiIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//wifiIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		pendingWifiIntent = PendingIntent.getBroadcast(context, 0, wifiIntent, 0);
 		notificationView.setOnClickPendingIntent(R.id.notification_wifi, pendingWifiIntent);
 		
 		Intent mobileDataIntent = new Intent("Mobile_Data");
-		mobileDataIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//mobileDataIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		pendingMobileDataIntent = PendingIntent.getBroadcast(context, 0, mobileDataIntent, 0);
 		notificationView.setOnClickPendingIntent(R.id.notification_internet, pendingMobileDataIntent);
 		
 		Intent soundIntent = new Intent("Sound");
-		soundIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//soundIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		pendingSoundIntent = PendingIntent.getBroadcast(context, 0, soundIntent, 0);
 		notificationView.setOnClickPendingIntent(R.id.notification_sound, pendingSoundIntent);
 		
 		Intent vibrationIntent = new Intent("Vibration");
-		vibrationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//vibrationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		pendingVibrationIntent = PendingIntent.getBroadcast(context, 0, vibrationIntent, 0);
 		notificationView.setOnClickPendingIntent(R.id.notification_vibrate, pendingVibrationIntent);
 		
 		Intent bluetoothIntent = new Intent("Bluetooth");
-		bluetoothIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//bluetoothIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		pendingBluetoothIntent = PendingIntent.getBroadcast(context, 0, bluetoothIntent, 0);
 		notificationView.setOnClickPendingIntent(R.id.notification_bluetooth, pendingBluetoothIntent);
 		
 		Intent bluetoothVisibilityIntent = new Intent("Bluetooth_Visibility");
-		bluetoothVisibilityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//bluetoothVisibilityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		pendingBluetoothVisibilityIntent = PendingIntent.getBroadcast(context, 0, bluetoothVisibilityIntent, 0);
 		notificationView.setOnClickPendingIntent(R.id.notification_bluetooth_visibility, pendingBluetoothVisibilityIntent);
 		
 		Intent autoRotationIntent = new Intent("Auto_Rotation");
-		autoRotationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		//autoRotationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		pendingAutoRotationIntent = PendingIntent.getBroadcast(context, 0, autoRotationIntent, 0);
 		notificationView.setOnClickPendingIntent(R.id.notification_auto_rotation, pendingAutoRotationIntent);
 		
