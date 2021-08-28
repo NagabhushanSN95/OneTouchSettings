@@ -1,0 +1,5 @@
+Short Description:
+Access all frequently used settings with one touch in the notification.
+
+Full Description:
+Tired of going to settings for each and every action. Try out new One Touch Settings. You can easily turn on/off Wi-fi, Mobile Data, Bluetooth, BT Visibility, Auto Rotation, Silent, Vibration and much more with just a single touch. For devices with android version 4.0.0 i.e. Ice-Cream Sandwich and higher, you can access the settings in the notification itself provided in the notification drawer. For lower android versions, you have to click on the notification to open the app where you can access all your settings. Currently 'Tethering' And 'Mobile Data Sim' are available only in Android Version 2.3 i.e. Gingerbread and below. For higher versions, they will be implemented soon. 

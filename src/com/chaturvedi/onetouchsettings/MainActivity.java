@@ -1,19 +1,29 @@
 package com.chaturvedi.onetouchsettings;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 public class MainActivity extends Activity
 {
+	private static final String SHARED_PREFERENCES_SETUP = "setup_preferences";
+	private static final String KEY_DISCLAIMER = "disclaimer";
+	
 	private static ImageButton wifiButton;
 	private static ImageButton tetheringButton;
 	private static ImageButton mobileDataButton;
@@ -31,6 +41,19 @@ public class MainActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		SharedPreferences preferences = this.getSharedPreferences(SHARED_PREFERENCES_SETUP, 0);
+		if(preferences.contains(KEY_DISCLAIMER))
+		{
+			if(!preferences.getBoolean(KEY_DISCLAIMER, false))
+			{
+				displayDisclaimer();
+			}
+		}
+		else
+		{
+			displayDisclaimer();
+		}
 		
 		wifiButton=(ImageButton)findViewById(R.id.wifi);
 		wifiButton.setOnClickListener(new WifiListener());
@@ -209,5 +232,41 @@ public class MainActivity extends Activity
 		{
 			ManagerDisplay.toggleAutoRotationState();
 		}
+	}
+	
+	private void displayDisclaimer()
+	{
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+		int screenWidth = displayMetrics.widthPixels;
+		int screenHeight = displayMetrics.heightPixels;
+		String disclaimerText = "";
+		InputStream inputStream = getResources().openRawResource(R.raw.disclaimer);
+		BufferedReader disclaimerReader = new BufferedReader(new InputStreamReader(inputStream));
+		try
+		{
+			String line=disclaimerReader.readLine();
+			while(line!=null)
+			{
+				disclaimerText += line + "\n";
+				line=disclaimerReader.readLine();
+			}
+		}
+		catch(Exception e)
+		{
+			Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+		}
+		
+		AlertDialog.Builder disclaimerDialog = new AlertDialog.Builder(this);
+		disclaimerDialog.setTitle("DISCLAIMER!");
+		disclaimerDialog.setMessage(disclaimerText);
+		disclaimerDialog.setCancelable(false);
+		disclaimerDialog.setPositiveButton("Understood", null);
+		disclaimerDialog.show().getWindow().setLayout((int) (screenWidth*0.9), (int) (screenHeight*0.5));
+		
+		SharedPreferences preferences = this.getSharedPreferences(SHARED_PREFERENCES_SETUP, 0);
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putBoolean(KEY_DISCLAIMER, true);
+		editor.commit();
 	}
 }

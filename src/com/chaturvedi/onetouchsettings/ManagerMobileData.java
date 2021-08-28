@@ -150,7 +150,7 @@ public class ManagerMobileData
 	                str = "untether";
 	            for (Method method : tetheringMethods)
 	            {
-	                if (method.getName().equals(str))
+	            	if (method.getName().equals(str))
 	                {
 	                    try
 	                    {
