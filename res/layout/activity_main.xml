@@ -1,0 +1,93 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity"
+    tools:ignore="ContentDescription" >
+
+    <TextView
+        android:id="@+id/krishna"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/krishna" />
+    
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+            	android:layout_height="wrap_content"
+            	android:orientation="horizontal" >
+                
+                <ImageButton
+                    android:id="@+id/wi-fi"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_marginLeft="10dp"
+        	    android:background="#FFFFFF"
+        	    android:src="@drawable/mobile_data_off" />
+                
+                <ImageButton
+                    android:id="@+id/internet"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_marginLeft="10dp"
+        	    android:background="#FFFFFF"
+        	    android:src="@drawable/mobile_data_off" />
+                
+                <ImageButton
+                    android:id="@+id/bluetooth"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_marginLeft="10dp"
+        	    android:background="#FFFFFF"
+        	    android:src="@drawable/mobile_data_off" />
+                
+                <ImageButton
+                    android:id="@+id/bluetooth_visibility"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_marginLeft="10dp"
+        	    android:background="#FFFFFF"
+        	    android:src="@drawable/mobile_data_off" />
+            </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+            	android:layout_height="wrap_content"
+            	android:layout_marginTop="10dp"
+            	android:orientation="horizontal" >
+                
+                <ImageButton
+        	    android:id="@+id/silent"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_marginLeft="10dp"
+        	    android:background="#FFFFFF"
+        	    android:src="@drawable/sound" />
+
+    		<ImageButton
+        	    android:id="@+id/vibrate"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_marginLeft="10dp"
+        	    android:background="#FFFFFF"
+        	    android:src="@drawable/vibration_on" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
