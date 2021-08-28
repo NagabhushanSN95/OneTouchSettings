@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 public class NotificationProvider
@@ -49,7 +48,7 @@ public class NotificationProvider
 			stackBuilder.addNextIntent(notificationIntent);
 			pendingNotificationIntent=stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 			notificationBuilder.setContentIntent(pendingNotificationIntent);
-
+			
 			notification=notificationBuilder.build();
 			manager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 			manager.notify(R.id.notification_sound, notification);
@@ -85,18 +84,22 @@ public class NotificationProvider
 	private void setNotificationLayout()
 	{
 		int mobileDataState, soundState, vibrationState;
-		PhoneStateManager.readPhoneState(context);
-		if(PhoneStateManager.getMobileDataState())
+		new ManagerWifi(context);
+		new ManagerMobileData(context);
+		new ManagerBluetooth(context);
+		new ManagerAudio(context);
+		
+		if(ManagerMobileData.getMobileDataState())
 			mobileDataState=1;
 		else
 			mobileDataState=0;
 		
-		if(PhoneStateManager.getSoundState())
+		if(ManagerAudio.getSoundState())
 			soundState=1;
 		else
 			soundState=0;
 		
-		if(PhoneStateManager.getVibrationState())
+		if(ManagerAudio.getVibrationState())
 			vibrationState=1;
 		else
 			vibrationState=0;
@@ -140,6 +143,5 @@ public class NotificationProvider
 				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout);
 				break;
 		}
-		Log.d("Notification Crashed", "Check-Point 08");
 	}
 }

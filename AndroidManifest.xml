@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.chaturvedi.onetouchsettings"
-    android:versionCode="2"
-    android:versionName="1.3.4" >
+    android:versionCode="017"
+    android:versionName="2.0.0" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.chaturvedi.onetouchsettings.MobileDataNotificationListener"></activity>
-        <activity android:name="com.chaturvedi.onetouchsettings.SilentNotificationListener"></activity>
+        <activity android:name="com.chaturvedi.onetouchsettings.SoundNotificationListener"></activity>
         <activity android:name="com.chaturvedi.onetouchsettings.VibrationNotificationListener"></activity>
     </application>
 

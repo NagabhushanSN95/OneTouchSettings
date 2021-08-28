@@ -1,12 +1,11 @@
 package com.chaturvedi.onetouchsettings;
 
-import java.lang.reflect.Method;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.ConnectivityManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -15,26 +14,14 @@ import android.widget.ImageButton;
 
 public class MainActivity extends Activity
 {
-	private static boolean wifiState;
-	private static boolean tetheringState;
-	private static boolean mobileDataState;
-	private static int mobileDataSim;
-	private static boolean bluetoothState;
-	private static boolean visibilityState;
-	private static boolean soundState;
-	private static boolean vibrationState;
-
 	private static ImageButton wifiButton;
 	private static ImageButton tetheringButton;
-	private static ImageButton internetButton;
+	private static ImageButton mobileDataButton;
 	private static ImageButton mobileDataSimButton;
 	private static ImageButton bluetoothButton;
 	private static ImageButton visibilityButton;
 	private static ImageButton soundButton;
-	private static ImageButton vibrateButton;
-	
-	private static ConnectivityManager mobileDataManager;
-	private static Method mobileDataMethod;
+	private static ImageButton vibrationButton;
 	
 	private NotificationProvider notification;
 	
@@ -46,12 +33,14 @@ public class MainActivity extends Activity
 
 		wifiButton=(ImageButton)findViewById(R.id.wifi);
 		wifiButton.setOnClickListener(new WifiListener());
-		tetheringButton=(ImageButton)findViewById(R.id.usb_tethering);
-		tetheringButton.setOnClickListener(new TetheringListener());
-		internetButton=(ImageButton)findViewById(R.id.internet);
-		internetButton.setOnClickListener(new InternetListener());
+		
+		mobileDataButton=(ImageButton)findViewById(R.id.internet);
+		mobileDataButton.setOnClickListener(new InternetListener());
 		mobileDataSimButton=(ImageButton)findViewById(R.id.mobile_data_sim);
 		mobileDataSimButton.setOnClickListener(new MobileDataSimListener());
+		tetheringButton=(ImageButton)findViewById(R.id.usb_tethering);
+		tetheringButton.setOnClickListener(new TetheringListener());
+		
 		bluetoothButton=(ImageButton)findViewById(R.id.bluetooth);
 		bluetoothButton.setOnClickListener(new BluetoothListener());
 		visibilityButton=(ImageButton)findViewById(R.id.bluetooth_visibility);
@@ -59,27 +48,23 @@ public class MainActivity extends Activity
 		
 		soundButton=(ImageButton)findViewById(R.id.sound);
 		soundButton.setOnClickListener(new SoundListener());
-		vibrateButton=(ImageButton)findViewById(R.id.vibrate);
-		vibrateButton.setOnClickListener(new VibrateListener());
-		try
-		{
-			mobileDataManager=(ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-			mobileDataMethod=ConnectivityManager.class.getDeclaredMethod("setMobileDataEnabled", boolean.class);
-			mobileDataMethod.setAccessible(true);
-		}
-		catch(Exception e)
-		{
-			
-		}
-		PhoneStateManager.readPhoneState(this);
-		wifiState=PhoneStateManager.getWifiState();
-		tetheringState=PhoneStateManager.getTetheringState();
-		readMobileDataState();
-		mobileDataSim=PhoneStateManager.getMobileDataSim();
-		bluetoothState=PhoneStateManager.getBluetoothState();
-		visibilityState=PhoneStateManager.getVisibilityState();
-		soundState=PhoneStateManager.getSoundState();
-		vibrationState=PhoneStateManager.getVibrationState();
+		vibrationButton=(ImageButton)findViewById(R.id.vibrate);
+		vibrationButton.setOnClickListener(new VibrateListener());
+		
+		
+		
+		new ManagerWifi(this);
+		ManagerWifi.readWifiState();
+		
+		new ManagerMobileData(this);
+		ManagerMobileData.readMobileDataState();
+		
+		new ManagerBluetooth(this);
+		ManagerBluetooth.readBluetoothState();
+		
+		new ManagerAudio(this);
+		ManagerAudio.readAudioState((AudioManager)this.getSystemService(Context.AUDIO_SERVICE));
+		
 		notification=new NotificationProvider(this);
 		notification.createNotification();
 		Timer timer=new Timer();
@@ -105,14 +90,19 @@ public class MainActivity extends Activity
 				@Override
 				public void run()
 				{
-					//PhoneStateManager.readPhoneState(MainActivity.this);
-					wifiState=PhoneStateManager.getWifiState();
-					tetheringState=PhoneStateManager.getTetheringState();
-					readMobileDataState();
-					bluetoothState=PhoneStateManager.getBluetoothState();
-					visibilityState=PhoneStateManager.getVisibilityState();
-					soundState=PhoneStateManager.getSoundState();
-					vibrationState=PhoneStateManager.getVibrationState();
+					
+					new ManagerWifi(MainActivity.this);
+					ManagerWifi.readWifiState();
+					
+					new ManagerMobileData(MainActivity.this);
+					ManagerMobileData.readMobileDataState();
+					
+					new ManagerBluetooth(MainActivity.this);
+					ManagerBluetooth.readBluetoothState();
+					
+					new ManagerAudio(MainActivity.this);
+					ManagerAudio.readAudioState((AudioManager)MainActivity.this.getSystemService(Context.AUDIO_SERVICE));
+					
 					setIcons();
 					
 					notification.createNotification();
@@ -122,75 +112,16 @@ public class MainActivity extends Activity
 		}
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void readMobileDataState()
-	{
-		try
-		{
-			Class cmClass=Class.forName(mobileDataManager.getClass().getName());
-			Method method=cmClass.getDeclaredMethod("getMobileDataEnabled");
-			method.setAccessible(true);
-			mobileDataState=(Boolean)method.invoke(mobileDataManager);
-		}
-		catch(Exception e)
-		{
-			
-		}
-	}
-	
-	public void setMobileData(boolean action)
-	{
-		try
-		{
-			mobileDataMethod.invoke(mobileDataManager, mobileDataState);
-		}
-		catch(Exception e)
-		{
-			
-		}
-	}
-	
 	private void setIcons()
 	{
-		if(wifiState)
-			wifiButton.setImageResource(R.drawable.wifi_on);
-		else
-			wifiButton.setImageResource(R.drawable.wifi_off);
-
-		if(tetheringState)
-			tetheringButton.setImageResource(R.drawable.usb_tethering_on);
-		else
-			tetheringButton.setImageResource(R.drawable.usb_tethering_off);
-		
-		if(mobileDataState)
-			internetButton.setImageResource(R.drawable.mobile_data_on);
-		else
-			internetButton.setImageResource(R.drawable.mobile_data_off);
-		
-		if(mobileDataSim==1)
-			mobileDataSimButton.setImageResource(R.drawable.data_sim1);
-		else
-			mobileDataSimButton.setImageResource(R.drawable.data_sim2);
-		
-		if(bluetoothState)
-			bluetoothButton.setImageResource(R.drawable.bluetooth_on);
-		else
-			bluetoothButton.setImageResource(R.drawable.bluetooth_off);
-		
-		if(visibilityState)
-			visibilityButton.setImageResource(R.drawable.visibility_on);
-		else
-			visibilityButton.setImageResource(R.drawable.visibility_off);
-		
-		if(soundState)
-			soundButton.setImageResource(R.drawable.sound_on);
-		else
-			soundButton.setImageResource(R.drawable.sound_off);
-		
-		if(vibrationState)
-			vibrateButton.setImageResource(R.drawable.vibration_on);
-		else
-			vibrateButton.setImageResource(R.drawable.vibration_off);
+		wifiButton.setImageResource(ManagerWifi.getWifiIcon());
+		mobileDataButton.setImageResource(ManagerMobileData.getMobileDataIcon());
+		mobileDataSimButton.setImageResource(ManagerMobileData.getMobileDataSimIcon());
+		tetheringButton.setImageResource(ManagerMobileData.getTetheringIcon());
+		bluetoothButton.setImageResource(ManagerBluetooth.getBluetoothIcon());
+		visibilityButton.setImageResource(ManagerBluetooth.getVisibilityIcon());
+		soundButton.setImageResource(ManagerAudio.getSoundIcon());
+		vibrationButton.setImageResource(ManagerAudio.getVibrationIcon());
 	}
 	
 	private class WifiListener implements OnClickListener
@@ -199,8 +130,7 @@ public class MainActivity extends Activity
 		@Override
 		public void onClick(View v)
 		{
-			wifiState=!wifiState;
-			PhoneStateManager.setWifiState(wifiState);
+			ManagerWifi.toggleWifiState();
 		}
 		
 	}
@@ -211,8 +141,7 @@ public class MainActivity extends Activity
 		@Override
 		public void onClick(View v)
 		{
-			tetheringState=!tetheringState;
-			PhoneStateManager.setTetheringState(tetheringState);
+			ManagerMobileData.toggleMobileDataSim();
 		}
 		
 	}
@@ -223,8 +152,7 @@ public class MainActivity extends Activity
 		@Override
 		public void onClick(View v)
 		{
-			mobileDataState=!mobileDataState;
-			setMobileData(mobileDataState);
+			ManagerMobileData.toggleMobileDataState();
 		}
 		
 	}
@@ -235,11 +163,7 @@ public class MainActivity extends Activity
 		@Override
 		public void onClick(View v)
 		{
-			if(mobileDataSim==1)
-				mobileDataSim=2;
-			else
-				mobileDataSim=1;
-			PhoneStateManager.setMobileDataSim(mobileDataSim);
+			ManagerMobileData.toggleMobileDataSim();
 		}
 		
 	}
@@ -250,8 +174,7 @@ public class MainActivity extends Activity
 		@Override
 		public void onClick(View v)
 		{
-			bluetoothState=!bluetoothState;
-			PhoneStateManager.setBluetoothState(bluetoothState);
+			ManagerBluetooth.toggleBluetoothState();
 		}
 		
 	}
@@ -262,7 +185,7 @@ public class MainActivity extends Activity
 		@Override
 		public void onClick(View v)
 		{
-			PhoneStateManager.setVisibility();
+			ManagerBluetooth.setVisibility();
 		}
 		
 	}
@@ -273,8 +196,7 @@ public class MainActivity extends Activity
 		@Override
 		public void onClick(View v)
 		{
-			soundState=!soundState;
-			PhoneStateManager.setSoundState(soundState);
+			ManagerAudio.toggleSoundState();
 		}
 		
 	}
@@ -285,8 +207,7 @@ public class MainActivity extends Activity
 		@Override
 		public void onClick(View v)
 		{
-			vibrationState=!vibrationState;
-			PhoneStateManager.setVibrationState(vibrationState);
+			ManagerAudio.toggleVibrationState();
 		}
 		
 	}

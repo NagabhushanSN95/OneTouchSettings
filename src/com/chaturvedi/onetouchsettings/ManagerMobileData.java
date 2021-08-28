@@ -5,28 +5,18 @@ import java.lang.reflect.Method;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.Intent;
-import android.media.AudioManager;
 import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
 import android.widget.Toast;
 
-public class PhoneStateManager extends Activity
+public class ManagerMobileData
 {
-	private static boolean wifiState;
 	private static boolean isTetherable=false;
 	private static boolean tetheringState;
 	private static boolean mobileDataState;
 	private static int mobileDataSim;
-	private static boolean bluetoothState;
-	private static boolean visibilityState;
-	private static boolean soundState;
-	private static boolean vibrationState;
 	
 	private static Activity context;
-	private static WifiManager wifiManager;
 	private static ConnectivityManager tetheringManager;
 	private static Method tetheringMethod;
 	private static UserDataManager dataManager;
@@ -35,42 +25,15 @@ public class PhoneStateManager extends Activity
 	private static Class mobileDataClass;
 	private static Method mobileDataMethod;
 	private static Method mobileDataSimMethod;
-	private static BluetoothAdapter bluetoothManager;
-	private static AudioManager audioManager;
 	
-	public static void readPhoneState(Activity activity)
+	public ManagerMobileData(Activity activity)
 	{
 		context=activity;
-		readInternetState();
-		readBluetoothState();
-		readAudioState((AudioManager)context.getSystemService(Context.AUDIO_SERVICE));
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void readInternetState()
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static void readMobileDataState()
 	{
-		// Check Wifi State
-		wifiManager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-		if(wifiManager.getWifiState()==WifiManager.WIFI_STATE_ENABLED)
-			wifiState=true;
-		else
-			wifiState=false;
-		
-		/*try
-		{
-			//Class wifiClass=Class.forName(wifiManager.getClass().getName());
-			Method[] wifiMethods = wifiManager.getClass().getDeclaredMethods();
-            for (Method method : wifiMethods)
-            {
-    			method.setAccessible(true);
-    			Toast.makeText(context, ""+method.getName(), Toast.LENGTH_SHORT).show();
-            }
-		}
-		catch(Exception e1)
-		{
-			e1.printStackTrace();
-		}
-		
 		// Check Tethering State*/
 		try
 		{
@@ -115,77 +78,36 @@ public class PhoneStateManager extends Activity
 		}
 	}
 	
-	public static void readBluetoothState()
-	{
-		bluetoothManager=BluetoothAdapter.getDefaultAdapter();
-		if(bluetoothManager.getState()==BluetoothAdapter.STATE_ON)
-			bluetoothState=true;
-		else
-			bluetoothState=false;
-		
-		visibilityState=bluetoothManager.isDiscovering();
-	}
-	
-	@SuppressWarnings({ "deprecation" })
-	public static void readAudioState(AudioManager manager)
-	{
-		audioManager=manager;
-		int ringerMode=audioManager.getRingerMode();
-		if(ringerMode==AudioManager.RINGER_MODE_NORMAL)
-		{
-			soundState=true;
-			if(audioManager.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER)==AudioManager.VIBRATE_SETTING_ON)
-				vibrationState=true;
-			else
-				vibrationState=false;
-		}
-		else if(ringerMode==AudioManager.RINGER_MODE_SILENT)
-		{
-			soundState=false;
-			vibrationState=false;
-		}
-		else if(ringerMode==AudioManager.RINGER_MODE_VIBRATE)
-		{
-			soundState=false;
-			vibrationState=true;
-		}
-	}
-	
-	public static void setWifiState(boolean state)
-	{
-		wifiState=state;
-		wifiManager.setWifiEnabled(wifiState);
-	}
-	
-	public static boolean getWifiState()
-	{
-		return wifiState;
-	}
-	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static boolean isTetherable()
 	{
+		isTetherable=false;
 		try
 		{
 			Class tetheringClass=Class.forName(mobileDataManager.getClass().getName());
 			tetheringMethod=tetheringClass.getDeclaredMethod("isTetheringSupported");
 			tetheringMethod.setAccessible(true);
 			isTetherable=(Boolean)tetheringMethod.invoke(tetheringManager);
+			//Toast.makeText(context, ""+isTetherable, Toast.LENGTH_LONG).show();
 		}
 		catch(IllegalAccessException e)
 		{
+			Toast.makeText(context, e.getStackTrace()+"\n"+e.getMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
 		catch(IllegalArgumentException e) 
 		{
+			Toast.makeText(context, e.getStackTrace()+"\n"+e.getMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
 		catch(InvocationTargetException e)
 		{
+			Toast.makeText(context, e.getStackTrace()+"\n"+e.getMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
 		catch(ClassNotFoundException e)
 		{
+			Toast.makeText(context, e.getStackTrace()+"\n"+e.getMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
 		catch(NoSuchMethodException e)
@@ -253,6 +175,12 @@ public class PhoneStateManager extends Activity
 		}
     }
 	
+	public static void toggleTetheringState()
+	{
+		tetheringState=!tetheringState;
+		setTetheringState(tetheringState);
+	}
+	
 	public static boolean getTetheringState()
 	{
 		return tetheringState;
@@ -269,6 +197,12 @@ public class PhoneStateManager extends Activity
 		{
 			
 		}
+	}
+	
+	public static void toggleMobileDataState()
+	{
+		mobileDataState=!mobileDataState;
+		setMobileDataState(mobileDataState);
 	}
 	
 	public static boolean getMobileDataState()
@@ -319,108 +253,41 @@ public class PhoneStateManager extends Activity
 		
 	}
 	
+	public static void toggleMobileDataSim()
+	{
+		if(mobileDataSim==1)
+			mobileDataSim=2;
+		else
+			mobileDataSim=1;
+		setMobileDataSim(mobileDataSim);
+	}
+	
 	public static int getMobileDataSim()
 	{
 		return mobileDataSim;
 	}
 	
-	public static void setBluetoothState(boolean state)
+	public static int getMobileDataIcon()
 	{
-		bluetoothState=state;
-		if(bluetoothState)
-			bluetoothManager.enable();
+		if(mobileDataState)
+			return R.drawable.mobile_data_on;
 		else
-			bluetoothManager.disable();
+			return R.drawable.mobile_data_off;
 	}
 	
-	public static boolean getBluetoothState()
+	public static int getMobileDataSimIcon()
 	{
-		return bluetoothState;
-	}
-	
-	public static void setVisibility()
-	{
-		Intent visibilityIntent=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-		visibilityIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-		context.startActivity(visibilityIntent);
-	}
-	
-	public static boolean getVisibilityState()
-	{
-		if(bluetoothManager.getScanMode()==BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE)
-			visibilityState=true;
+		if(mobileDataSim==1)
+			return R.drawable.data_sim1;
 		else
-			visibilityState=false;
-		return visibilityState;
+			return R.drawable.data_sim2;
 	}
 	
-	@SuppressWarnings("deprecation")
-	public static void setSoundState(boolean state)
+	public static int getTetheringIcon()
 	{
-		soundState=state;
-		if(!soundState)
-		{
-			if(vibrationState)
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);		// Silent And Vibrate
-			}
-			else
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);		// Only Silent, No Vibration
-			}
-		}
+		if(tetheringState)
+			return R.drawable.usb_tethering_on;
 		else
-		{
-			if(vibrationState)
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Sound And Vibrate
-				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
-			}
-			else
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Only Sound, No Vibration
-				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
-			}
-		}
-	}
-	
-	public static boolean getSoundState()
-	{
-		return soundState;
-	}
-	
-	@SuppressWarnings("deprecation")
-	public static void setVibrationState(boolean state)
-	{
-		vibrationState=state;
-		if(vibrationState)
-		{
-			if(!soundState)
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);		// Silent And Vibrate
-			}
-			else
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Sound And Vibrate
-				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
-			}
-		}
-		else
-		{
-			if(!soundState)
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);		// Only Silent, No Vibration
-			}
-			else
-			{
-				audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);		// Only Sound, No Vibration??
-				audioManager.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
-			}
-		}
-	}
-	
-	public static boolean getVibrationState()
-	{
-		return vibrationState;
+			return R.drawable.usb_tethering_off;
 	}
 }
