@@ -95,8 +95,15 @@
         	    android:background="#FFFFFF"
     		    android:src="@drawable/usb_tethering_off" />
 
+    		<ImageButton
+    		    android:id="@+id/mobile_data_sim"
+    		    android:layout_width="wrap_content"
+    		    android:layout_height="wrap_content"
+        	    android:layout_marginLeft="10dp"
+        	    android:background="#FFFFFF"
+    		    android:src="@drawable/data_sim1" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
 </RelativeLayout>

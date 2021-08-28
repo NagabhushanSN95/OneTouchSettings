@@ -18,6 +18,7 @@ public class MainActivity extends Activity
 	private static boolean wifiState;
 	private static boolean tetheringState;
 	private static boolean mobileDataState;
+	private static int mobileDataSim;
 	private static boolean bluetoothState;
 	private static boolean visibilityState;
 	private static boolean soundState;
@@ -26,6 +27,7 @@ public class MainActivity extends Activity
 	private static ImageButton wifiButton;
 	private static ImageButton tetheringButton;
 	private static ImageButton internetButton;
+	private static ImageButton mobileDataSimButton;
 	private static ImageButton bluetoothButton;
 	private static ImageButton visibilityButton;
 	private static ImageButton soundButton;
@@ -48,6 +50,8 @@ public class MainActivity extends Activity
 		tetheringButton.setOnClickListener(new TetheringListener());
 		internetButton=(ImageButton)findViewById(R.id.internet);
 		internetButton.setOnClickListener(new InternetListener());
+		mobileDataSimButton=(ImageButton)findViewById(R.id.mobile_data_sim);
+		mobileDataSimButton.setOnClickListener(new MobileDataSimListener());
 		bluetoothButton=(ImageButton)findViewById(R.id.bluetooth);
 		bluetoothButton.setOnClickListener(new BluetoothListener());
 		visibilityButton=(ImageButton)findViewById(R.id.bluetooth_visibility);
@@ -71,6 +75,7 @@ public class MainActivity extends Activity
 		wifiState=PhoneStateManager.getWifiState();
 		tetheringState=PhoneStateManager.getTetheringState();
 		readMobileDataState();
+		mobileDataSim=PhoneStateManager.getMobileDataSim();
 		bluetoothState=PhoneStateManager.getBluetoothState();
 		visibilityState=PhoneStateManager.getVisibilityState();
 		soundState=PhoneStateManager.getSoundState();
@@ -162,6 +167,11 @@ public class MainActivity extends Activity
 		else
 			internetButton.setImageResource(R.drawable.mobile_data_off);
 		
+		if(mobileDataSim==1)
+			mobileDataSimButton.setImageResource(R.drawable.data_sim1);
+		else
+			mobileDataSimButton.setImageResource(R.drawable.data_sim2);
+		
 		if(bluetoothState)
 			bluetoothButton.setImageResource(R.drawable.bluetooth_on);
 		else
@@ -215,6 +225,21 @@ public class MainActivity extends Activity
 		{
 			mobileDataState=!mobileDataState;
 			setMobileData(mobileDataState);
+		}
+		
+	}
+	
+	private class MobileDataSimListener implements OnClickListener
+	{
+
+		@Override
+		public void onClick(View v)
+		{
+			if(mobileDataSim==1)
+				mobileDataSim=2;
+			else
+				mobileDataSim=1;
+			PhoneStateManager.setMobileDataSim(mobileDataSim);
 		}
 		
 	}

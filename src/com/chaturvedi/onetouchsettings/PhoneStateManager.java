@@ -4,19 +4,22 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
-import android.util.Log;
+import android.widget.Toast;
 
 public class PhoneStateManager extends Activity
 {
 	private static boolean wifiState;
+	private static boolean isTetherable=false;
 	private static boolean tetheringState;
 	private static boolean mobileDataState;
+	private static int mobileDataSim;
 	private static boolean bluetoothState;
 	private static boolean visibilityState;
 	private static boolean soundState;
@@ -27,7 +30,10 @@ public class PhoneStateManager extends Activity
 	private static ConnectivityManager tetheringManager;
 	private static Method tetheringMethod;
 	private static ConnectivityManager mobileDataManager;
+	@SuppressWarnings("rawtypes")
+	private static Class mobileDataClass;
 	private static Method mobileDataMethod;
+	private static Method mobileDataSimMethod;
 	private static BluetoothAdapter bluetoothManager;
 	private static AudioManager audioManager;
 	
@@ -42,12 +48,29 @@ public class PhoneStateManager extends Activity
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void readInternetState()
 	{
+		// Check Wifi State
 		wifiManager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
 		if(wifiManager.getWifiState()==WifiManager.WIFI_STATE_ENABLED)
 			wifiState=true;
 		else
 			wifiState=false;
 		
+		/*try
+		{
+			//Class wifiClass=Class.forName(wifiManager.getClass().getName());
+			Method[] wifiMethods = wifiManager.getClass().getDeclaredMethods();
+            for (Method method : wifiMethods)
+            {
+    			method.setAccessible(true);
+    			Toast.makeText(context, ""+method.getName(), Toast.LENGTH_SHORT).show();
+            }
+		}
+		catch(Exception e1)
+		{
+			e1.printStackTrace();
+		}
+		
+		// Check Tethering State*/
 		try
 		{
 			tetheringManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -55,25 +78,29 @@ public class PhoneStateManager extends Activity
 			tetheringMethod.setAccessible(true);
 			
 			Class tetheringClass=Class.forName(mobileDataManager.getClass().getName());
-			tetheringMethod=tetheringClass.getDeclaredMethod("tether");
+			tetheringMethod=tetheringClass.getDeclaredMethod("isTetheringSupported");
 			tetheringMethod.setAccessible(true);
-			tetheringState=(Boolean)tetheringMethod.invoke(tetheringManager);
+			isTetherable=(Boolean)tetheringMethod.invoke(tetheringManager);
 		}
 		catch(Exception e)
 		{
 			
 		}
 		
+		// Check Mobile-Data State
 		try
 		{
 			mobileDataManager=(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			mobileDataMethod=ConnectivityManager.class.getDeclaredMethod("setMobileDataEnabled", boolean.class);
-			mobileDataMethod.setAccessible(true);
 			
-			Class cmClass=Class.forName(mobileDataManager.getClass().getName());
-			mobileDataMethod=cmClass.getDeclaredMethod("getMobileDataEnabled");
+			// Set method to check the mobile data state
+			mobileDataClass=Class.forName(mobileDataManager.getClass().getName());
+			mobileDataMethod=mobileDataClass.getDeclaredMethod("getMobileDataEnabled");
 			mobileDataMethod.setAccessible(true);
 			mobileDataState=(Boolean)mobileDataMethod.invoke(mobileDataManager);
+			
+			// Change method to set the mobile data on or off
+			mobileDataMethod=mobileDataClass.getDeclaredMethod("setMobileDataEnabled", boolean.class);
+			mobileDataMethod.setAccessible(true);
 		}
 		catch(Exception e)
 		{
@@ -128,56 +155,64 @@ public class PhoneStateManager extends Activity
 		return wifiState;
 	}
 	
+	public static boolean isTetherable()
+	{
+		return isTetherable;
+	}
+	
 	public static void setTetheringState(boolean state)
 	{
 		tetheringState=state;
-		String tag="test";
-		try
+		if(tetheringState && !isTetherable)
 		{
-            ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            Log.d(tag, "test enable usb tethering");
-            Method[] wmMethods = cm.getClass().getDeclaredMethods();
-            String str = "";
-            if (tetheringState)
-                str = "tether";
-            else
-                str = "untether";
-            for (Method method : wmMethods)
-            {
-                Log.d("in usb tethering method",method.getName()+"<<nn>>");
-                if (method.getName().equals(str))
-                {
-                    Log.d(tag, "gg==" + method.getName());
-                    Log.d("in if", " case matches "+method.getName()+"and str is "+str);
-                    try
-                    {
-                        Integer code = (Integer) method.invoke(cm, "usb0");
-                    //  code = (Integer) method.invoke(cm, "setting TH");
-                        Log.d(tag, "code===" + code);
-                    }
-                    catch (IllegalArgumentException e)
-                    {
-                        Log.d(tag, "eroor== gg " + e.toString());
-                        e.printStackTrace();
-                    }
-                    catch (IllegalAccessException e)
-                    {
-                        Log.d(tag, "eroor== gg " + e.toString());
-                        e.printStackTrace();
-                    }
-                    catch (InvocationTargetException e)
-                    {
-                        Log.d(tag, "eroor== gg " + e.toString());
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-		catch(Exception e)
+			AlertDialog.Builder notTetherable=new AlertDialog.Builder(context);
+			notTetherable.setTitle("Unable To Tether");
+			notTetherable.setMessage("Connect USB First And Then Try Again");
+			notTetherable.setPositiveButton("OK", null);
+			notTetherable.show();
+			tetheringState=false;
+		}
+		else
 		{
-            Log.e(tag, "" + e);
-        }
-
+			try
+			{
+				tetheringManager=(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	            Method[] tetheringMethods = tetheringManager.getClass().getDeclaredMethods();
+	            String str = "";
+	            if (tetheringState)
+	                str = "tether";
+	            else
+	                str = "untether";
+	            for (Method method : tetheringMethods)
+	            {
+	                if (method.getName().equals(str))
+	                {
+	                    try
+	                    {
+	                    	method.invoke(tetheringManager, "usb0");
+	                        //Integer code = (Integer) method.invoke(tetheringManager, "usb0");
+	                    	//code = (Integer) method.invoke(tetheringManager, "setting TH");
+	                    }
+	                    catch (IllegalArgumentException e)
+	                    {
+	                        e.printStackTrace();
+	                    }
+	                    catch (IllegalAccessException e)
+	                    {
+	                        e.printStackTrace();
+	                    }
+	                    catch (InvocationTargetException e)
+	                    {
+	                        e.printStackTrace();
+	                    }
+	                }
+	            }
+	        }
+			catch(Exception e)
+			{
+	            
+	        }
+		}
     }
 	
 	public static boolean getTetheringState()
@@ -194,15 +229,60 @@ public class PhoneStateManager extends Activity
 		}
 		catch(Exception e)
 		{
-			Log.d("Mobile Data Management", "Failed");
-			if(mobileDataMethod==null)
-				Log.d("Mobile Data Management", "Null Pointer");
+			
 		}
 	}
 	
 	public static boolean getMobileDataState()
 	{
 		return mobileDataState;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void setMobileDataSim(int sim)
+	{
+		mobileDataSim=sim;
+		// Set Method to change the Mobile Data Sim
+		try
+		{
+			switch(mobileDataSim)
+			{
+				case 1:
+					mobileDataSimMethod=mobileDataClass.getDeclaredMethod("switchToSim1DataNetwork");
+					mobileDataSimMethod.setAccessible(true);
+					mobileDataSimMethod.invoke(mobileDataManager);
+					
+					mobileDataSimMethod=mobileDataClass.getDeclaredMethod("onSwitchToSim1DataNetworkCallback");
+					Toast.makeText(context, mobileDataSimMethod.getParameterTypes().getClass().toString(), Toast.LENGTH_LONG).show();
+					mobileDataSimMethod.setAccessible(true);
+					mobileDataSimMethod.invoke(mobileDataManager);
+					Toast.makeText(context, mobileDataSimMethod.getParameterTypes().getClass().toString(), Toast.LENGTH_LONG).show();
+					break;
+					
+				case 2:
+					mobileDataSimMethod=mobileDataClass.getDeclaredMethod("switchToSim2DataNetwork");
+					mobileDataSimMethod.setAccessible(true);
+					mobileDataSimMethod.invoke(mobileDataManager);
+					break;
+					
+				default:
+					mobileDataSimMethod=mobileDataClass.getDeclaredMethod("switchToSim1DataNetwork");
+					mobileDataSimMethod.setAccessible(true);
+					mobileDataSimMethod.invoke(mobileDataManager);
+					Toast.makeText(context, "Data Network "+"Changed To Default Sim 1", Toast.LENGTH_SHORT).show();
+					break;
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static int getMobileDataSim()
+	{
+		return mobileDataSim;
 	}
 	
 	public static void setBluetoothState(boolean state)

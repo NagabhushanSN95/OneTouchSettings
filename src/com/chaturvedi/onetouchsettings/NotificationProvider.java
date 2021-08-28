@@ -8,6 +8,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 public class NotificationProvider
@@ -31,29 +33,53 @@ public class NotificationProvider
 	@SuppressLint({ "InlinedApi", "NewApi" })
 	public void createNotification()
 	{
-		notificationBuilder=new NotificationCompat.Builder(context);
-		notificationBuilder.setSmallIcon(R.drawable.notification_icon);
-		notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
-		//notificationBuilder.setOngoing(true);
-		
-		setNotificationLayout();
-		notificationIntent=new Intent(context, MainActivity.class);
-		pendingNotificationIntent=PendingIntent.getActivity(context, 0, notificationIntent, 0);
-		notificationBuilder.setOngoing(true);
-		notification=notificationBuilder.build();
-		notification.contentView=notificationView;
-		notification.contentIntent=pendingNotificationIntent;
-		notification.flags=Notification.FLAG_NO_CLEAR;
+		if(android.os.Build.VERSION.SDK_INT<11)
+		{
+			notificationBuilder=new NotificationCompat.Builder(context);
+			notificationBuilder.setSmallIcon(R.drawable.notification_icon);
+			notificationBuilder.setContentTitle("One Touch Settings");
+			notificationBuilder.setContentText("Click Here To Open One Touch Settings");
+			notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
+			notificationBuilder.setOngoing(true);
+			notification=notificationBuilder.build();
+			
+			notificationIntent=new Intent(context, MainActivity.class);
+			TaskStackBuilder stackBuilder=TaskStackBuilder.create(context);
+			stackBuilder.addParentStack(MainActivity.class);
+			stackBuilder.addNextIntent(notificationIntent);
+			pendingNotificationIntent=stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+			notificationBuilder.setContentIntent(pendingNotificationIntent);
 
-		pendingMobileDataIntent=PendingIntent.getActivity(context, 0, new Intent(context, MobileDataNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
-		notificationView.setOnClickPendingIntent(R.id.notification_internet, pendingMobileDataIntent);
-		pendingSoundIntent=PendingIntent.getActivity(context, 0, new Intent(context, SoundNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
-		notificationView.setOnClickPendingIntent(R.id.notification_sound, pendingSoundIntent);
-		pendingVibrationIntent=PendingIntent.getActivity(context, 0, new Intent(context, VibrationNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
-		notificationView.setOnClickPendingIntent(R.id.notification_vibrate, pendingVibrationIntent);
-		
-		manager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.notify(R.id.notification_sound, notification);
+			notification=notificationBuilder.build();
+			manager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+			manager.notify(R.id.notification_sound, notification);
+		}
+		else
+		{
+			notificationBuilder=new NotificationCompat.Builder(context);
+			notificationBuilder.setSmallIcon(R.drawable.notification_icon);
+			notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
+			
+			setNotificationLayout();
+			notificationIntent=new Intent(context, MainActivity.class);
+			pendingNotificationIntent=PendingIntent.getActivity(context, 0, notificationIntent, 0);
+			notificationBuilder.setOngoing(true);
+			notification=notificationBuilder.build();
+			
+			notification.contentView=notificationView;
+			notification.contentIntent=pendingNotificationIntent;
+			notification.flags=Notification.FLAG_NO_CLEAR;
+
+			pendingMobileDataIntent=PendingIntent.getActivity(context, 0, new Intent(context, MobileDataNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			notificationView.setOnClickPendingIntent(R.id.notification_internet, pendingMobileDataIntent);
+			pendingSoundIntent=PendingIntent.getActivity(context, 0, new Intent(context, SoundNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			notificationView.setOnClickPendingIntent(R.id.notification_sound, pendingSoundIntent);
+			pendingVibrationIntent=PendingIntent.getActivity(context, 0, new Intent(context, VibrationNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			notificationView.setOnClickPendingIntent(R.id.notification_vibrate, pendingVibrationIntent);
+			
+			manager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+			manager.notify(R.id.notification_sound, notification);
+		}
 	}
 	
 	private void setNotificationLayout()
@@ -114,5 +140,6 @@ public class NotificationProvider
 				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout);
 				break;
 		}
+		Log.d("Notification Crashed", "Check-Point 08");
 	}
 }
