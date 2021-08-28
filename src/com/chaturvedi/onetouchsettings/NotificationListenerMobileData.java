@@ -3,14 +3,15 @@ package com.chaturvedi.onetouchsettings;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class MobileDataNotificationListener extends Activity
+public class NotificationListenerMobileData extends Activity
 {
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
 		
+		new ManagerMobileData(this);
+		ManagerMobileData.readMobileDataState();
 		ManagerMobileData.toggleMobileDataState();
 		finish();
 	}

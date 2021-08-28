@@ -11,46 +11,65 @@
         android:layout_alignParentTop="true"
         android:text="@string/app_name" />
 
-    
-
-    <ScrollView
-        android:id="@+id/scrollView1"
+    <ImageButton
+        android:id="@+id/notification_internet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/notification_title"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/notification_title"
-        android:layout_marginTop="5dp" >
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:background="#FFFFFF"
+        android:src="@drawable/notification_mobile_data_off" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-            
-            <ImageButton
-        	android:id="@+id/notification_internet"
-        	android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-        	android:layout_marginLeft="10dp"
-        	android:background="#FFFFFF"
-        	android:src="@drawable/notification_mobile_data_off" />
+    <ImageButton
+        android:id="@+id/notification_sound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/notification_internet"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/notification_internet"
+        android:background="#FFFFFF"
+        android:src="@drawable/notification_sound_off" />
 
-    	    <ImageButton
-        	android:id="@+id/notification_sound"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_marginLeft="10dp"
-        	android:background="#FFFFFF"
-        	android:src="@drawable/notification_sound_on" />
+    <ImageButton
+        android:id="@+id/notification_vibrate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/notification_sound"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/notification_sound"
+        android:background="#FFFFFF"
+        android:src="@drawable/notification_vibration_off" />
 
-	    <ImageButton
-        	android:id="@+id/notification_vibrate"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_marginLeft="10dp"
-        	android:background="#FFFFFF"
-        	android:src="@drawable/notification_vibration_on" />
-	    
-        </LinearLayout>
-    </ScrollView>
+    <ImageButton
+        android:id="@+id/notification_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/notification_vibrate"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/notification_vibrate"
+        android:background="#FFFFFF"
+        android:src="@drawable/notification_bluetooth_off" />
+
+    <ImageButton
+        android:id="@+id/notification_bluetooth_visibility"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/notification_bluetooth"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/notification_bluetooth"
+        android:background="#FFFFFF"
+        android:src="@drawable/notification_visibility_off" />
+
+    <ImageButton
+        android:id="@+id/notification_auto_rotation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/notification_bluetooth_visibility"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/notification_bluetooth_visibility"
+        android:background="#FFFFFF"
+        android:src="@drawable/notification_auto_rotation_off" />
 
 </RelativeLayout>

@@ -1,9 +1,11 @@
 package com.chaturvedi.onetouchsettings;
 
 import android.app.Activity;
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 
-public class SoundNotificationListener extends Activity
+public class NotificationListenerSound extends Activity
 {
 	//private AudioManager audioManager;
 	//private boolean soundState;
@@ -12,8 +14,9 @@ public class SoundNotificationListener extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
 		
+		new ManagerAudio(this);
+		ManagerAudio.readAudioState((AudioManager)this.getSystemService(Context.AUDIO_SERVICE));
 		ManagerAudio.toggleSoundState();
 		finish();
 	}

@@ -9,6 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.RemoteViews;
 
 public class NotificationProvider
@@ -23,6 +26,12 @@ public class NotificationProvider
 	private PendingIntent pendingMobileDataIntent;
 	private PendingIntent pendingSoundIntent;
 	private PendingIntent pendingVibrationIntent;
+	private PendingIntent pendingBluetoothIntent;
+	private PendingIntent pendingBluetoothVisibilityIntent;
+	private PendingIntent pendingAutoRotationIntent;
+	
+	private LayoutInflater notificationLayout;
+	private View notificationLayoutView;
 	
 	public NotificationProvider(Activity activity)
 	{
@@ -58,30 +67,73 @@ public class NotificationProvider
 			notificationBuilder=new NotificationCompat.Builder(context);
 			notificationBuilder.setSmallIcon(R.drawable.notification_icon);
 			notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
+			notificationBuilder.setOngoing(true);
 			
+			notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout);
 			setNotificationLayout();
 			notificationIntent=new Intent(context, MainActivity.class);
 			pendingNotificationIntent=PendingIntent.getActivity(context, 0, notificationIntent, 0);
-			notificationBuilder.setOngoing(true);
 			notification=notificationBuilder.build();
 			
 			notification.contentView=notificationView;
 			notification.contentIntent=pendingNotificationIntent;
 			notification.flags=Notification.FLAG_NO_CLEAR;
 
-			pendingMobileDataIntent=PendingIntent.getActivity(context, 0, new Intent(context, MobileDataNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			Intent newIntent=new Intent(context, NotificationListenerVibration.class);
+			newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			pendingMobileDataIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerMobileData.class), PendingIntent.FLAG_UPDATE_CURRENT);
 			notificationView.setOnClickPendingIntent(R.id.notification_internet, pendingMobileDataIntent);
-			pendingSoundIntent=PendingIntent.getActivity(context, 0, new Intent(context, SoundNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			pendingSoundIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerSound.class), PendingIntent.FLAG_UPDATE_CURRENT);
 			notificationView.setOnClickPendingIntent(R.id.notification_sound, pendingSoundIntent);
-			pendingVibrationIntent=PendingIntent.getActivity(context, 0, new Intent(context, VibrationNotificationListener.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			pendingVibrationIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerVibration.class), PendingIntent.FLAG_UPDATE_CURRENT);
 			notificationView.setOnClickPendingIntent(R.id.notification_vibrate, pendingVibrationIntent);
+			pendingBluetoothIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerBluetooth.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			notificationView.setOnClickPendingIntent(R.id.notification_bluetooth, pendingBluetoothIntent);
+			pendingBluetoothVisibilityIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerBluetoothVisibility.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			notificationView.setOnClickPendingIntent(R.id.notification_bluetooth_visibility, pendingBluetoothVisibilityIntent);
+			pendingAutoRotationIntent=PendingIntent.getActivity(context, 0, new Intent(context, NotificationListenerAutoRotation.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			notificationView.setOnClickPendingIntent(R.id.notification_auto_rotation, pendingAutoRotationIntent);
 			
 			manager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 			manager.notify(R.id.notification_sound, notification);
 		}
 	}
-	
+
 	private void setNotificationLayout()
+	{
+		notificationLayout=LayoutInflater.from(context);
+		notificationLayoutView=notificationLayout.inflate(R.layout.notification_layout, null);
+		ImageButton imageButton;
+		
+		new ManagerWifi(context);
+		new ManagerMobileData(context);
+		new ManagerBluetooth(context);
+		new ManagerAudio(context);
+
+		imageButton=(ImageButton)notificationLayoutView.findViewById(R.id.notification_internet);
+		if(ManagerMobileData.getMobileDataState())
+			imageButton.setImageResource(R.drawable.notification_mobile_data_on);
+		else
+			imageButton.setImageResource(R.drawable.notification_mobile_data_off);
+		
+		imageButton=(ImageButton)notificationLayoutView.findViewById(R.id.notification_sound);
+		if(ManagerAudio.getSoundState())
+			imageButton.setImageResource(R.drawable.notification_sound_on);
+		else
+			imageButton.setImageResource(R.drawable.notification_sound_off);
+		
+		imageButton=(ImageButton)notificationLayoutView.findViewById(R.id.notification_vibrate);
+		if(ManagerAudio.getVibrationState())
+			imageButton.setImageResource(R.drawable.notification_vibration_on);
+		else
+			imageButton.setImageResource(R.drawable.notification_vibration_off);
+		
+		//notificationView.removeAllViews(R.layout.notification_layout);
+		//notificationView.addView(R.layout.notification_layout, notificationView);
+		
+	}
+	
+	/*private void setNotificationLayout()
 	{
 		int mobileDataState, soundState, vibrationState;
 		new ManagerWifi(context);
@@ -143,5 +195,5 @@ public class NotificationProvider
 				notificationView=new RemoteViews(context.getPackageName(), R.layout.notification_layout);
 				break;
 		}
-	}
+	}*/
 }
